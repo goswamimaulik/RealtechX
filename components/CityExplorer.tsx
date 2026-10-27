@@ -54,9 +54,9 @@ export default function CityExplorer() {
         </Link>
 
         {/* Locality cards */}
-        <div className="grid gap-3 sm:grid-cols-2 md:gap-4">
+        <div className="no-scrollbar -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-px-4 px-4 pb-2 md:-mx-6 md:scroll-px-6 md:px-6 lg:mx-0 lg:grid lg:grid-cols-2 lg:gap-4 lg:overflow-visible lg:px-0 lg:pb-0">
           {locs.map((l) => (
-            <div key={l.slug} className="rounded-2xl border border-ink/[0.06] bg-white p-4 shadow-card transition hover:shadow-luxe md:p-5">
+            <div key={l.slug} className="w-[82%] shrink-0 snap-start rounded-2xl border border-ink/[0.06] bg-white p-4 shadow-card transition hover:shadow-luxe sm:w-[48%] md:p-5 lg:w-auto">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <Link href={`/city/${city.slug}/${l.slug}`} className="group/l inline-flex items-center gap-1 font-display text-lg font-semibold hover:text-gold-dark md:text-xl">

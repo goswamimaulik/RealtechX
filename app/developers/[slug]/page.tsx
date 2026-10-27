@@ -62,7 +62,7 @@ export default async function DeveloperPage({ params }: { params: Promise<{ slug
           </div>
 
           <h2 className="mb-5 mt-10 font-display text-[24px] font-semibold md:mb-6 md:mt-12 md:text-3xl">Projects by {d.name} <span className="text-muted">({list.length})</span></h2>
-          <div className="grid grid-cols-2 gap-3 md:gap-5 xl:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 md:gap-5">
             {list.map((p) => <PropertyCard key={p.id} p={p} />)}
           </div>
         </div>

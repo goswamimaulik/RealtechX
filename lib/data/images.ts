@@ -1,9 +1,15 @@
 // Curated Unsplash photography (free to use under the Unsplash License).
 // Replace with your own project renders via the admin panel (Phase 2).
 const u = (id: string, w = 1600) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=${w}&q=80`;
+/** Fixed-size crop (used for portrait / square art direction). */
+export const crop = (id: string, w: number, h: number) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&crop=entropy&w=${w}&h=${h}&q=80`;
 
 export const img = {
-  hero: u('1613490493576-7fde63acd811', 2200),
+  hero: u('1512917774080-9991f1c4c750', 2400),
+  heroMobile: crop('1512917774080-9991f1c4c750', 900, 1300),
+  why: crop('1600596542815-ffad4c1539a9', 1200, 1440),
+  whyWide: crop('1600596542815-ffad4c1539a9', 1400, 1000),
+  loan: u('1560518883-ce09059eeffa', 2000),
   heroAlt: u('1600596542815-ffad4c1539a9', 2000),
   apartment: [
     u('1545324418-cc1a3fa10c00'),

@@ -4,7 +4,7 @@ Phase 1: complete public website (frontend) with sample data, search & filters, 
 
 ## Tech
 - Next.js 15 (App Router) + React 19 + TypeScript
-- Tailwind CSS (luxury ink + champagne-gold theme, Cormorant Garamond + Manrope fonts)
+- Tailwind CSS (luxury ink + champagne-gold theme) · fonts: Outfit (headings) + Inter (body) via `next/font` (self-hosted, fast)
 - Nodemailer (Gmail SMTP) for lead emails
 - Static generation for all property, city, locality, type, status, developer and blog pages → very fast + SEO friendly
 
@@ -18,8 +18,8 @@ Phase 1: complete public website (frontend) with sample data, search & filters, 
 | `/city/[city]` and `/city/[city]/[locality]` | City & locality archives |
 | `/status/[status]` | new-launch, under-construction, ready-to-move |
 | `/developers`, `/developers/[slug]` | Developer listing & detail (with all their projects) |
-| `/property/[slug]` | Property detail: gallery + lightbox, auto popup (3 sec), price table, floor plan unlock, amenities, map, developer, EMI, FAQ, similar, sticky mobile CTA |
-| `/home-loan` | EMI calculator + amortisation schedule + loan guide (`/emi-calculator` redirects here) |
+| `/property/[slug]` | Property detail: gallery + lightbox, auto popup (3 sec), key facts, floor plans (tabs by BHK), amenities (view all), locality report (tabs + map), developer, RERA, EMI, FAQ, similar (carousel), sticky mobile CTA |
+| `/home-loan` | EMI calculator + repayment schedule, eligibility calculator, process, documents (Salaried/Self-employed/NRI), FAQ (`/emi-calculator` redirects here) |
 | `/localities` | All localities grouped by city |
 | `/about` (stats + FAQ), `/contact` (FAQ), `/blog`, `/blog/[slug]` | Company pages & blog (`/services` redirects to `/about`) |
 | `/privacy-policy`, `/terms-and-conditions`, `/disclaimer`, `/rera-disclaimer`, `/cookie-policy` | Legal |

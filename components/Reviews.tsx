@@ -18,7 +18,7 @@ export default function Reviews() {
             <span className="rounded-full border border-gold/40 bg-white px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-gold-dark">Sample reviews · preview</span>
           </div>
         </div>
-        <Carousel label="Reviews" itemClassName="w-[85%] sm:w-[calc(50%-6px)] lg:w-[calc(33.333%-13.4px)]">
+        <Carousel label="Reviews" itemClassName="w-[85%] sm:w-[calc((100%-12px)/1.6)] md:w-[calc((100%-40px)/2.3)] lg:w-[calc((100%-60px)/3.3)]">
           {reviews.map((r) => (
             <figure key={r.initials + r.role} className="relative flex h-full flex-col rounded-2xl border border-ink/[0.06] bg-white p-6 shadow-card md:p-8">
               <Quote className="absolute right-6 top-6 h-10 w-10 text-gold/20" />

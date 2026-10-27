@@ -218,12 +218,12 @@ export default function PropertiesExplorer({
               <button onClick={() => openLead({ intent: 'Share My Requirement', source: 'No Results' })} className="btn-gold mt-6">Share your requirement</button>
             </div>
           ) : (
-            <div className={view === 'grid' ? 'grid grid-cols-2 gap-3 md:gap-5 xl:grid-cols-3' : 'grid gap-4 md:gap-5'}>
+            <div className={view === 'grid' ? 'grid gap-4 sm:grid-cols-2 md:gap-5 xl:grid-cols-3' : 'grid gap-4 md:gap-5'}>
               {results.map((p, i) => (
                 <div key={p.id} className="contents">
                   <PropertyCard p={p} layout={view} />
                   {i === 5 && (
-                    <div className="col-span-2 flex flex-col justify-between rounded-2xl bg-ink-grad p-6 text-ivory md:p-7 xl:col-span-1">
+                    <div className="flex flex-col justify-between rounded-[20px] bg-ink-grad p-6 text-ivory sm:col-span-2 md:p-7 xl:col-span-1">
                       <div>
                         <p className="eyebrow !text-gold-light">Can’t decide?</p>
                         <p className="mt-3 font-display text-2xl font-semibold leading-tight md:text-3xl">Get a free shortlist from our advisor</p>

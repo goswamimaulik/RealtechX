@@ -48,3 +48,10 @@ export function formatDate(iso: string) {
 export function startPrice(p: Property): string {
   return formatINR(p.priceMin) + (p.listingFor === 'rent' ? ' /mo' : '');
 }
+
+/** Short area label for cards, e.g. "1.65K – 2.6K ft²" or "0.5 – 5 acre". */
+export function areaCompact(p: Property): string {
+  const unit = p.areaUnit === 'sq.ft' ? 'ft²' : p.areaUnit;
+  const f = (n: number) => (p.areaUnit === 'sq.ft' && n >= 1000 ? `${Number((n / 1000).toFixed(2))}K` : n.toLocaleString('en-IN'));
+  return p.areaMin === p.areaMax ? `${f(p.areaMin)} ${unit}` : `${f(p.areaMin)}–${f(p.areaMax)} ${unit}`;
+}

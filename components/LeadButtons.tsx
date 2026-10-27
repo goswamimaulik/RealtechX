@@ -9,7 +9,15 @@ export function LeadButton({
   ...detail
 }: LeadModalDetail & { children: React.ReactNode; className?: string }) {
   return (
-    <button type="button" className={className} onClick={() => openLead(detail)}>
+    <button
+      type="button"
+      className={className}
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        openLead(detail);
+      }}
+    >
       {children}
     </button>
   );
@@ -18,17 +26,20 @@ export function LeadButton({
 /** Opens the enquiry popup automatically after `delay` ms, once per page per session. */
 export function AutoLeadPopup({ delay = 3000, storageKey, ...detail }: LeadModalDetail & { delay?: number; storageKey: string }) {
   useEffect(() => {
+    const key = 'rtx-popup-' + storageKey;
     let seen = false;
     try {
-      seen = window.sessionStorage.getItem('rtx-popup-' + storageKey) === '1';
+      seen = window.sessionStorage.getItem(key) === '1';
     } catch {
-      /* ignore */
+      /* storage unavailable */
     }
     if (seen) return;
     const t = window.setTimeout(() => {
+      // don't stack on top of a dialog the visitor already opened
+      if (document.querySelector('[role="dialog"]')) return;
       openLead({ source: 'Auto Popup', ...detail });
       try {
-        window.sessionStorage.setItem('rtx-popup-' + storageKey, '1');
+        window.sessionStorage.setItem(key, '1');
       } catch {
         /* ignore */
       }

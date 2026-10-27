@@ -33,7 +33,7 @@ export default function ShortlistView() {
           Get expert comparison
         </button>
       </div>
-      <div className="grid grid-cols-2 gap-3 md:gap-5 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-3">
         {list.map((p) => <PropertyCard key={p.id} p={p} />)}
       </div>
     </div>

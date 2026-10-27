@@ -1,9 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { BedDouble, Heart, MapPin, Maximize2, Phone } from 'lucide-react';
+import { Heart, MapPin, MessageCircle, Phone } from 'lucide-react';
 import type { Property } from '@/lib/types';
-import { areaRange, configLabel, priceRange, startPrice, titleCase } from '@/lib/format';
+import { areaCompact, configLabel, priceRange, titleCase } from '@/lib/format';
 import { getCity } from '@/lib/data/cities';
 import { getDeveloper } from '@/lib/data/developers';
 import { site } from '@/lib/site';
@@ -17,68 +17,79 @@ const statusTone: Record<string, string> = {
   'ready-to-move': 'bg-emerald-500 text-white',
 };
 
+const typeNoun: Record<string, string> = {
+  residential: 'Apartments',
+  commercial: 'Commercial',
+  plot: 'Plots',
+  land: 'Land',
+  villa: 'Villas',
+};
+
 export default function PropertyCard({ p, layout = 'grid' }: { p: Property; layout?: 'grid' | 'list' }) {
   const { has, toggle } = useShortlist();
   const city = getCity(p.city);
   const dev = getDeveloper(p.developer);
   const saved = has(p.id);
   const list = layout === 'list';
+  const wa = `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(`Hi, I'm interested in ${p.title} (${p.id}).`)}`;
 
   return (
-    <article className={`group flex h-full overflow-hidden rounded-2xl border border-ink/[0.06] bg-white shadow-card transition duration-300 hover:-translate-y-1 hover:shadow-luxe ${list ? 'flex-col sm:flex-row' : 'flex-col'}`}>
-      <div className={`relative shrink-0 overflow-hidden ${list ? 'aspect-[4/3] sm:aspect-auto sm:w-[40%]' : 'aspect-[4/3]'}`}>
+    <article className={`group relative flex h-full overflow-hidden rounded-[20px] border border-ink/[0.07] bg-white shadow-[0_6px_24px_-14px_rgba(11,16,32,.25)] transition duration-300 hover:-translate-y-1 hover:shadow-luxe ${list ? 'flex-col sm:flex-row' : 'flex-col'}`}>
+      <div className={`relative shrink-0 overflow-hidden ${list ? 'aspect-[16/11] sm:aspect-auto sm:w-[42%]' : 'aspect-[16/11]'}`}>
         <Link href={`/property/${p.slug}`} aria-label={p.title} className="absolute inset-0">
-          <SmartImage
-            src={p.images[0]}
-            alt={`${p.title}, ${p.locality}`}
-            fill
-            sizes="(max-width: 768px) 50vw, (max-width: 1280px) 33vw, 25vw"
-            className="object-cover transition duration-700 group-hover:scale-105"
-          />
+          <SmartImage src={p.images[0]} alt={`${p.title}, ${p.locality}`} fill sizes="(max-width: 640px) 85vw, (max-width: 1024px) 45vw, 30vw" className="object-cover transition duration-700 group-hover:scale-[1.06]" />
         </Link>
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/55 via-transparent to-ink/10" />
-        <span className={`absolute left-2 top-2 rounded-full px-2 py-0.5 text-[8.5px] font-extrabold uppercase tracking-wider md:left-3 md:top-3 md:px-2.5 md:py-1 md:text-[10px] ${statusTone[p.status]}`}>
-          {titleCase(p.status)}
-        </span>
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/60 via-transparent to-ink/10" />
+        <div className="pointer-events-none absolute left-3 top-3 flex gap-1.5">
+          <span className={`rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider shadow-sm ${statusTone[p.status]}`}>{titleCase(p.status)}</span>
+          {p.listingFor === 'rent' && <span className="rounded-full bg-ink/80 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white backdrop-blur">For rent</span>}
+        </div>
         <button
           onClick={() => toggle(p.id)}
-          className={`absolute right-2 top-2 grid h-7 w-7 place-items-center rounded-full backdrop-blur transition md:right-3 md:top-3 md:h-9 md:w-9 ${saved ? 'bg-gold text-ink' : 'bg-white/85 text-ink hover:bg-white'}`}
+          className={`absolute right-3 top-3 grid h-9 w-9 place-items-center rounded-full backdrop-blur transition active:scale-90 ${saved ? 'bg-gold text-ink' : 'bg-white/90 text-ink hover:bg-white'}`}
           aria-label={saved ? 'Remove from shortlist' : 'Add to shortlist'}
         >
-          <Heart className={`h-3.5 w-3.5 md:h-4 md:w-4 ${saved ? 'fill-current' : ''}`} />
+          <Heart className={`h-4 w-4 ${saved ? 'fill-current' : ''}`} />
         </button>
-        <p className="pointer-events-none absolute bottom-2 left-2 text-[10px] font-bold uppercase tracking-wider text-white/90 md:bottom-3 md:left-3 md:text-[11px]">
-          {titleCase(p.type)} · {p.listingFor === 'rent' ? 'Rent' : 'Sale'}
-        </p>
+        <p className="pointer-events-none absolute bottom-3 left-3 right-3 truncate text-[12px] font-medium text-white/90">by {dev?.name}</p>
       </div>
 
-      <div className="flex min-w-0 flex-1 flex-col p-3 md:p-5">
-        <p className="font-display text-[16px] font-bold leading-tight text-ink md:text-[22px]"><span className="md:hidden">{startPrice(p)} <span className="font-sans text-[10px] font-semibold text-muted">onwards</span></span><span className="hidden md:inline">{priceRange(p)}</span></p>
-        <Link href={`/property/${p.slug}`} className="mt-1 md:mt-1.5">
-          <h3 className="line-clamp-1 font-sans text-[13px] font-bold text-ink transition group-hover:text-gold-dark md:text-[15px]">{p.title}</h3>
+      <div className="flex min-w-0 flex-1 flex-col p-4 md:p-5">
+        <Link href={`/property/${p.slug}`}>
+          <h3 className="truncate font-display text-[18px] font-semibold leading-tight text-ink transition group-hover:text-gold-dark">{p.title}</h3>
         </Link>
-        <p className="mt-0.5 flex items-center gap-1 text-[11px] text-muted md:mt-1 md:text-xs">
-          <MapPin className="h-3 w-3 shrink-0 text-gold-dark md:h-3.5 md:w-3.5" />
-          <span className="line-clamp-1">{p.locality}, {city?.name}</span>
+        <p className="mt-1 flex items-center gap-1 text-[13px] text-muted">
+          <MapPin className="h-3.5 w-3.5 shrink-0 text-gold-dark" />
+          <span className="truncate">{p.locality}, {city?.name}</span>
         </p>
-        {list && <p className="mt-3 hidden line-clamp-2 text-sm text-ink/70 sm:block">{p.tagline}</p>}
 
-        <div className="mt-2.5 space-y-1 border-t border-ink/5 pt-2.5 text-[11px] text-ink/70 md:mt-4 md:flex md:flex-wrap md:gap-x-4 md:space-y-0 md:pt-4 md:text-xs">
-          <span className="flex items-center gap-1.5"><BedDouble className="h-3.5 w-3.5 shrink-0 text-gold-dark" /><span className="line-clamp-1">{configLabel(p)}</span></span>
-          <span className="flex items-center gap-1.5"><Maximize2 className="h-3.5 w-3.5 shrink-0 text-gold-dark" /><span className="line-clamp-1">{areaRange(p)}</span></span>
-        </div>
+        <p className="mt-3 font-display text-[21px] font-semibold leading-none text-ink">{priceRange(p)}</p>
 
-        <p className="mt-2 hidden line-clamp-1 text-[11px] text-muted md:block">by <span className="font-semibold text-ink/80">{dev?.name}</span></p>
+        <dl className="mt-4 grid grid-cols-3 divide-x divide-ink/[0.07] rounded-xl bg-ivory/80 py-2.5 text-center">
+          {[
+            { k: 'Config', v: p.bhk.length ? configLabel(p) : typeNoun[p.type] },
+            { k: 'Area', v: areaCompact(p) },
+            { k: 'Possession', v: p.possession.replace('Ready for construction', 'Ready') },
+          ].map((f) => (
+            <div key={f.k} className="min-w-0 px-2">
+              <dt className="text-[10px] font-medium uppercase tracking-wider text-muted">{f.k}</dt>
+              <dd className="mt-0.5 truncate text-[12.5px] font-semibold text-ink" title={f.v}>{f.v}</dd>
+            </div>
+          ))}
+        </dl>
 
-        <div className="mt-auto flex items-center gap-1.5 pt-3 md:pt-4">
+        <div className="mt-auto flex items-center gap-2 pt-4">
           <button
             onClick={() => openLead({ property: p.title, intent: 'Get Best Price', source: 'Property Card', image: p.images[0] })}
-            className="flex-1 rounded-full bg-ink px-3 py-2 text-[11px] font-bold text-ivory transition hover:bg-gold hover:text-ink md:py-2.5 md:text-xs"
+            className="btn-ink flex-1 !px-4 !py-2.5 text-[13px]"
           >
             Enquire now
           </button>
-          <a href={`tel:${site.phoneRaw}`} className="hidden h-9 w-9 shrink-0 place-items-center rounded-full border border-ink/10 hover:border-gold sm:grid" aria-label="Call">
-            <Phone className="h-3.5 w-3.5" />
+          <a href={wa} target="_blank" rel="noopener" className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-ink/10 text-[#1DA851] transition hover:border-[#25D366] hover:bg-[#25D366] hover:text-white" aria-label="WhatsApp">
+            <MessageCircle className="h-4 w-4" />
+          </a>
+          <a href={`tel:${site.phoneRaw}`} className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-ink/10 transition hover:border-gold hover:bg-gold hover:text-ink" aria-label="Call">
+            <Phone className="h-4 w-4" />
           </a>
         </div>
       </div>

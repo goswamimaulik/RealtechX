@@ -1,80 +1,79 @@
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
-import { Search } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import { allLocalities, properties } from '@/lib/data/properties';
 import { cities, getCity } from '@/lib/data/cities';
 import { developers } from '@/lib/data/developers';
 import { navTypes, budgetBuy } from '@/lib/site';
 
-/** "Popular searches" link hub shown above the footer on every page. */
-export default function PopularSearches() {
-  const groups: { title: string; links: { href: string; label: string }[] }[] = [
-    {
-      title: 'Localities',
-      links: allLocalities().map((l) => ({ href: `/city/${l.city}/${l.slug}`, label: `Property in ${l.name}, ${getCity(l.city)?.name}` })),
-    },
-    {
-      title: 'Developers',
-      links: developers.map((d) => ({ href: `/developers/${d.slug}`, label: `${d.name} projects` })),
-    },
-    {
-      title: 'Budget',
-      links: budgetBuy.map((b) => ({ href: `/properties?for=buy&budget=${b.value}`, label: `Property ${b.label.replace('Under', 'under').replace('Above', 'above')}` })),
-    },
-    {
-      title: 'Configuration',
-      links: [2, 3, 4, 5].map((b) => ({ href: `/properties?bhk=${b}`, label: `${b === 5 ? '5+' : b} BHK flats & villas` }))
-        .concat(navTypes.map((t) => ({ href: `/property-type/${t.slug}`, label: `${t.label} for sale` }))),
-    },
-    {
-      title: 'City & type',
-      links: cities.flatMap((c) =>
-        navTypes
-          .filter((t) => properties.some((p) => p.city === c.slug && p.type === t.slug))
-          .slice(0, 2)
-          .map((t) => ({ href: `/properties?city=${c.slug}&type=${t.slug}`, label: `${t.label} in ${c.name}` })),
-      ),
-    },
-  ];
+type Group = { title: string; links: { href: string; label: string }[] };
 
+const groups: Group[] = [
+  {
+    title: 'Localities',
+    links: allLocalities().map((l) => ({ href: `/city/${l.city}/${l.slug}`, label: `Property in ${l.name}, ${getCity(l.city)?.name}` })),
+  },
+  { title: 'Developers', links: developers.map((d) => ({ href: `/developers/${d.slug}`, label: `${d.name} projects` })) },
+  {
+    title: 'Budget',
+    links: cities.flatMap((c) => budgetBuy.slice(1, 3).map((b) => ({ href: `/properties?city=${c.slug}&budget=${b.value}`, label: `Property ${b.label} in ${c.name}` }))),
+  },
+  {
+    title: 'Configuration',
+    links: cities.flatMap((c) => [2, 3, 4].map((b) => ({ href: `/properties?city=${c.slug}&bhk=${b}`, label: `${b} BHK in ${c.name}` }))),
+  },
+  {
+    title: 'Property type',
+    links: cities.flatMap((c) =>
+      navTypes.filter((t) => properties.some((p) => p.city === c.slug && p.type === t.slug)).map((t) => ({ href: `/properties?city=${c.slug}&type=${t.slug}`, label: `${t.label} in ${c.name}` })),
+    ),
+  },
+];
+
+/** "Popular searches" link hub (tab-wise) shown above the footer on every page. */
+export default function PopularSearches() {
+  const [tab, setTab] = useState(groups[0].title);
+  const [more, setMore] = useState(false);
+  const current = groups.find((g) => g.title === tab)!;
   return (
-    <section className="border-t border-ink/5 bg-white py-12 md:py-16" aria-labelledby="popular-searches">
+    <section className="border-t border-ink/[0.06] bg-white py-12 md:py-16" aria-labelledby="popular-searches">
       <div className="container">
-        <div className="mb-8 flex items-center gap-3">
-          <span className="grid h-10 w-10 place-items-center rounded-full bg-gold-50"><Search className="h-4 w-4 text-gold-dark" /></span>
+        <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div>
-            <h2 id="popular-searches" className="font-display text-2xl font-semibold md:text-3xl">Popular searches</h2>
-            <p className="text-xs text-muted md:text-sm">Quick links to the most searched properties on RealtechX</p>
+            <p className="eyebrow">Quick links</p>
+            <h2 id="popular-searches" className="mt-2 font-display text-[24px] font-semibold md:text-[32px]">Popular searches</h2>
+          </div>
+          <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 md:mx-0 md:px-0" role="tablist">
+            {groups.map((g) => (
+              <button
+                key={g.title}
+                role="tab"
+                aria-selected={tab === g.title}
+                onClick={() => { setTab(g.title); setMore(false); }}
+                className={`shrink-0 rounded-full border px-4 py-2 text-[13px] font-medium transition ${tab === g.title ? 'border-ink bg-ink text-ivory' : 'border-ink/10 bg-white text-ink/70 hover:border-gold hover:text-ink'}`}
+              >
+                {g.title}
+              </button>
+            ))}
           </div>
         </div>
-        {/* Desktop: open columns */}
-        <div className="hidden gap-8 lg:grid lg:grid-cols-5">
-          {groups.map((g) => (
-            <div key={g.title}>
-              <p className="pb-4 text-[11px] font-bold uppercase tracking-[0.22em] text-gold-dark">{g.title}</p>
-              <ul className="space-y-2 text-[13px] text-ink/70">
-                {g.links.map((l) => (
-                  <li key={l.href}><Link href={l.href} className="transition hover:text-gold-dark">{l.label}</Link></li>
-                ))}
-              </ul>
-            </div>
+        <ul key={tab} className="mt-7 grid animate-fadeIn grid-cols-1 gap-x-8 gap-y-0.5 sm:grid-cols-2 lg:grid-cols-4">
+          {current.links.map((l, i) => (
+            <li key={l.href} className={!more && i >= 10 ? 'hidden sm:block' : ''}>
+              <Link href={l.href} className="group flex items-center justify-between gap-2 border-b border-ink/[0.05] py-2.5 text-[13.5px] text-ink/70 transition hover:text-gold-dark">
+                <span className="truncate">{l.label}</span>
+                <ArrowUpRight className="h-3.5 w-3.5 shrink-0 opacity-0 transition group-hover:opacity-100" />
+              </Link>
+            </li>
           ))}
-        </div>
-        {/* Mobile / tablet: accordions */}
-        <div className="grid gap-x-8 sm:grid-cols-2 lg:hidden">
-          {groups.map((g) => (
-            <details key={g.title} className="group border-b border-ink/5">
-              <summary className="flex cursor-pointer list-none items-center justify-between py-4 text-[12px] font-bold uppercase tracking-[0.2em] text-ink [&::-webkit-details-marker]:hidden">
-                {g.title}
-                <span className="grid h-7 w-7 place-items-center rounded-full bg-ivory text-base text-gold-dark transition group-open:rotate-45">+</span>
-              </summary>
-              <div className="flex flex-wrap gap-2 pb-5">
-                {g.links.map((l) => (
-                  <Link key={l.href} href={l.href} className="rounded-full border border-ink/10 px-3 py-1.5 text-[12.5px] text-ink/75">{l.label}</Link>
-                ))}
-              </div>
-            </details>
-          ))}
-        </div>
+        </ul>
+        {current.links.length > 10 && (
+          <button type="button" onClick={() => setMore((v) => !v)} className="btn-outline mt-5 w-full !py-2.5 text-[13px] sm:hidden">
+            {more ? 'Show less' : `Show all ${current.links.length}`}
+          </button>
+        )}
       </div>
     </section>
   );

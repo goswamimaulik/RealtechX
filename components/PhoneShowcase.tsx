@@ -41,7 +41,7 @@ export default function PhoneShowcase({ featured }: { featured: Property[] }) {
             <div className="absolute left-1/2 top-2 z-10 h-5 w-24 -translate-x-1/2 rounded-full bg-[#1d2333]" />
             <div className="h-[520px] overflow-hidden rounded-[34px] sm:h-[560px]">
               <div className="flex items-center justify-between bg-white px-4 pb-3 pt-9">
-                <span className="font-display text-[17px] font-bold text-ink">Realtech<span className="gold-text italic">X</span></span>
+                <span className="font-display text-[17px] font-bold text-ink">Realtech<span className="gold-text">X</span></span>
                 <span className="grid h-7 w-7 place-items-center rounded-full border border-ink/10"><Heart className="h-3.5 w-3.5 text-ink" /></span>
               </div>
               <div className="px-3.5 pt-3">

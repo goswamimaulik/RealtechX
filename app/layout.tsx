@@ -1,10 +1,14 @@
 import type { Metadata, Viewport } from 'next';
+import { Inter, Outfit } from 'next/font/google';
 import './globals.css';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import PopularSearches from '@/components/PopularSearches';
 import LeadModalHost from '@/components/LeadModal';
 import { site } from '@/lib/site';
+
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
+const outfit = Outfit({ subsets: ['latin'], weight: ['400', '500', '600', '700'], variable: '--font-outfit', display: 'swap' });
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
@@ -40,22 +44,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     address: { '@type': 'PostalAddress', addressLocality: 'Surat', addressRegion: 'Gujarat', addressCountry: 'IN' },
   };
   return (
-    <html lang="en-IN">
+    <html lang="en-IN" className={`${inter.variable} ${outfit.variable}`}>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://images.unsplash.com" />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
-        />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgLd) }} />
       </head>
-      <body className="overflow-x-hidden">
+      <body>
         <div className="bg-ink text-ivory">
           <div className="container flex items-center justify-center gap-2 py-1.5 text-center text-[11px] leading-snug sm:py-2 sm:text-xs">
-            <span className="shrink-0 rounded-full bg-gold px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-widest text-ink">Preview</span>
-            <span className="text-ivory/80 sm:hidden">{site.previewNoticeShort}</span>
+            <span className="shrink-0 rounded-full bg-gold px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-ink">Preview</span>
+            <span className="truncate text-ivory/80 sm:hidden">{site.previewNoticeShort}</span>
             <span className="hidden text-ivory/80 sm:inline">{site.previewNotice}</span>
           </div>
         </div>
