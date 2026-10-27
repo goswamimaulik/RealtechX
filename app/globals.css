@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  body {
+    @apply bg-ivory text-ink font-sans antialiased;
+    font-feature-settings: 'ss01', 'cv11';
+  }
+  h1, h2, h3, h4 { @apply font-display tracking-tight; }
+  ::selection { background: #E7D3A4; color: #0B1020; }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-semibold transition-all duration-300 disabled:opacity-60;
+  }
+  .btn-gold { @apply btn bg-gold-grad text-ink shadow-gold hover:brightness-105 hover:-translate-y-0.5; }
+  .btn-ink { @apply btn bg-ink text-ivory hover:bg-ink-700; }
+  .btn-outline { @apply btn border border-ink/15 bg-white text-ink hover:border-gold hover:text-gold-dark; }
+  .btn-ghost-light { @apply btn border border-white/30 text-white hover:bg-white/10; }
+
+  .eyebrow { @apply inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.28em] text-gold-dark; }
+  .eyebrow::before { content: ''; @apply h-px w-8 bg-gold; }
+
+  .section { @apply py-16 md:py-24; }
+  .h-section { @apply font-display text-3xl font-semibold leading-tight md:text-5xl; }
+
+  .card { @apply rounded-2xl border border-ink/5 bg-white shadow-card; }
+
+  .input {
+    @apply w-full rounded-xl border border-ink/10 bg-white px-4 py-3 text-sm text-ink outline-none transition placeholder:text-muted/70 focus:border-gold focus:ring-2 focus:ring-gold/20;
+  }
+  .label { @apply mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted; }
+
+  .chip { @apply inline-flex items-center gap-1.5 rounded-full border border-ink/10 bg-white px-3.5 py-1.5 text-xs font-semibold text-ink/80 transition hover:border-gold hover:text-gold-dark; }
+  .chip-active { @apply border-ink bg-ink text-ivory hover:text-ivory; }
+
+  .prose-luxe p { @apply mb-4 leading-relaxed text-ink/75; }
+  .prose-luxe h2 { @apply mb-3 mt-10 text-2xl font-semibold md:text-3xl; }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .text-balance { text-wrap: balance; }
+  .gold-text { @apply bg-gold-grad bg-clip-text text-transparent; }
+}
