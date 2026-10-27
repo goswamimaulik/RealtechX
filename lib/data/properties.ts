@@ -310,7 +310,7 @@ export const properties: Property[] = [
     title: 'Kanakapura Greens',
     tagline: 'Agricultural land parcels on Kanakapura Road',
     type: 'land', listingFor: 'buy', status: 'ready-to-move',
-    city: 'bangalore', locality: 'Kanakapura Road', developer: 'verdant-habitats',
+    city: 'bangalore', locality: 'Kanakapura Road', developer: 'meridian-land-ventures',
     priceMin: 6000000, priceMax: 75000000, areaMin: 1, areaMax: 10, areaUnit: 'acre', bhk: [],
     configurations: [
       { label: '1-acre Parcel', area: '1 acre', price: '₹60 L onwards' },
@@ -411,7 +411,7 @@ export const properties: Property[] = [
     title: 'Shamshabad Highway Land',
     tagline: 'Highway-facing land parcels near the airport',
     type: 'land', listingFor: 'buy', status: 'ready-to-move',
-    city: 'hyderabad', locality: 'Shamshabad', developer: 'deccan-heights-group',
+    city: 'hyderabad', locality: 'Shamshabad', developer: 'meridian-land-ventures',
     priceMin: 12000000, priceMax: 90000000, areaMin: 1, areaMax: 8, areaUnit: 'acre', bhk: [],
     configurations: [
       { label: '1-acre Parcel', area: '1 acre', price: '₹1.2 Cr onwards' },

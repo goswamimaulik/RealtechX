@@ -80,6 +80,17 @@ export const developers: Developer[] = [
     specialties: ['Luxury villas', 'Land parcels', 'Smart homes'],
     cover: img.villa[1],
   },
+  {
+    slug: 'meridian-land-ventures',
+    name: 'Meridian Land Ventures',
+    city: 'bangalore',
+    established: 2013,
+    tagline: 'Curated land and farmland across South India',
+    about:
+      'Meridian Land Ventures sources, verifies and develops clear-title land parcels and managed farmland on growth corridors around Bangalore and Hyderabad, with complete documentation support for buyers.',
+    specialties: ['Land parcels', 'Managed farmland', 'Title diligence'],
+    cover: img.land[2],
+  },
 ];
 
 export const getDeveloper = (slug: string) => developers.find((d) => d.slug === slug);

@@ -39,19 +39,19 @@ export default async function DeveloperPage({ params }: { params: Promise<{ slug
             { k: 'Listed projects', v: list.length },
             { k: 'Experience', v: `${new Date().getFullYear() - d.established}+ yrs` },
           ].map((s) => (
-            <div key={s.k} className="rounded-xl border border-white/15 bg-white/5 p-4 backdrop-blur">
-              <p className="font-display text-2xl font-semibold text-gold-light">{s.v}</p>
+            <div key={s.k} className="rounded-xl border border-white/15 bg-white/5 p-3 backdrop-blur md:p-4">
+              <p className="truncate font-display text-xl font-semibold text-gold-light md:text-2xl">{s.v}</p>
               <p className="text-[11px] uppercase tracking-wider text-ivory/60">{s.k}</p>
             </div>
           ))}
         </div>
       </PageHero>
 
-      <section className="container grid gap-10 py-14 lg:grid-cols-[1fr_380px]">
-        <div>
-          <div className="card p-7 md:p-9">
+      <section className="container grid gap-10 py-10 md:py-14 lg:grid-cols-[minmax(0,1fr)_360px]">
+        <div className="min-w-0">
+          <div className="card p-5 md:p-9">
             <p className="eyebrow">About the developer</p>
-            <h2 className="mt-3 font-display text-3xl font-semibold">{d.name}</h2>
+            <h2 className="mt-3 font-display text-[26px] font-semibold md:text-3xl">{d.name}</h2>
             <p className="mt-4 leading-relaxed text-ink/75">{d.about}</p>
             <div className="mt-6 grid gap-3 sm:grid-cols-3">
               {d.specialties.map((s) => (
@@ -61,14 +61,14 @@ export default async function DeveloperPage({ params }: { params: Promise<{ slug
             <p className="mt-6 text-sm text-muted">Active in: {cityNames} · Categories: {types}</p>
           </div>
 
-          <h2 className="mb-6 mt-12 font-display text-3xl font-semibold">Projects by {d.name} <span className="text-muted">({list.length})</span></h2>
-          <div className="grid gap-6 sm:grid-cols-2">
+          <h2 className="mb-5 mt-10 font-display text-[24px] font-semibold md:mb-6 md:mt-12 md:text-3xl">Projects by {d.name} <span className="text-muted">({list.length})</span></h2>
+          <div className="grid grid-cols-2 gap-3 md:gap-5 xl:grid-cols-3">
             {list.map((p) => <PropertyCard key={p.id} p={p} />)}
           </div>
         </div>
 
         <aside>
-          <div className="card sticky top-24 p-7">
+          <div className="card sticky top-24 p-5 md:p-7">
             <p className="eyebrow">Enquire</p>
             <h3 className="mb-5 mt-2 font-display text-2xl font-semibold">Get details of all {d.name} projects</h3>
             <LeadForm source={`Developer: ${d.name}`} property={d.name} cta="Get Project Details" />

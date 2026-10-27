@@ -44,3 +44,7 @@ export function titleCase(s: string) {
 export function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
 }
+
+export function startPrice(p: Property): string {
+  return formatINR(p.priceMin) + (p.listingFor === 'rent' ? ' /mo' : '');
+}

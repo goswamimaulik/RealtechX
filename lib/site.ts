@@ -12,6 +12,7 @@ export const site = {
   hours: 'Mon – Sat, 10:00 AM – 7:00 PM',
   previewNotice:
     'Preview portal — listings are sample projects shown for demonstration; details may change and are not yet verified on RERA.',
+  previewNoticeShort: 'Sample listings for demo · not yet RERA-verified',
   social: {
     instagram: '#',
     facebook: '#',
@@ -47,3 +48,10 @@ export const budgetRent = [
   { value: '100000-300000', label: '₹1 L – ₹3 L / month' },
   { value: '300000-999999999', label: 'Above ₹3 L / month' },
 ];
+
+export const reraPortals: Record<string, { name: string; url: string }> = {
+  Maharashtra: { name: 'MahaRERA', url: 'https://maharera.maharashtra.gov.in' },
+  Karnataka: { name: 'K-RERA', url: 'https://rera.karnataka.gov.in' },
+  Telangana: { name: 'TS-RERA', url: 'https://rera.telangana.gov.in' },
+  Gujarat: { name: 'GujRERA', url: 'https://gujrera.gujarat.gov.in' },
+};

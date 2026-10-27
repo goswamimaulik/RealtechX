@@ -169,20 +169,20 @@ export default function PropertiesExplorer({
   );
 
   return (
-    <div className="container py-10 md:py-14">
+    <div className="container py-6 md:py-14">
       {/* Search bar */}
-      <div className="card mb-8 flex flex-col gap-3 p-3 md:flex-row md:items-center">
+      <div className="card mb-6 flex flex-col gap-2 p-2.5 md:mb-8 md:flex-row md:items-center md:gap-3 md:p-3">
         <div className="flex flex-1 items-center gap-3 px-3">
           <Search className="h-5 w-5 shrink-0 text-gold-dark" />
           <input
             value={f.q}
             onChange={(e) => setF((p) => ({ ...p, q: e.target.value }))}
             placeholder="Search by project, locality, city or developer"
-            className="w-full bg-transparent py-3 text-sm outline-none"
+            className="w-full bg-transparent py-3 text-base outline-none md:text-sm"
           />
         </div>
         <div className="flex gap-2">
-          <select value={f.sort} onChange={(e) => setF((p) => ({ ...p, sort: e.target.value }))} className="input !w-auto !py-2.5" aria-label="Sort">
+          <select value={f.sort} onChange={(e) => setF((p) => ({ ...p, sort: e.target.value }))} className="input min-w-0 flex-1 !py-2.5 md:!w-auto md:flex-none" aria-label="Sort">
             <option value="newest">Newest first</option>
             <option value="featured">Featured</option>
             <option value="price-asc">Price: Low to High</option>
@@ -218,15 +218,15 @@ export default function PropertiesExplorer({
               <button onClick={() => openLead({ intent: 'Share My Requirement', source: 'No Results' })} className="btn-gold mt-6">Share your requirement</button>
             </div>
           ) : (
-            <div className={view === 'grid' ? 'grid gap-6 sm:grid-cols-2 xl:grid-cols-3' : 'grid gap-6'}>
+            <div className={view === 'grid' ? 'grid grid-cols-2 gap-3 md:gap-5 xl:grid-cols-3' : 'grid gap-4 md:gap-5'}>
               {results.map((p, i) => (
                 <div key={p.id} className="contents">
                   <PropertyCard p={p} layout={view} />
                   {i === 5 && (
-                    <div className={`flex flex-col justify-between rounded-2xl bg-ink-grad p-7 text-ivory ${view === 'grid' ? '' : ''}`}>
+                    <div className="col-span-2 flex flex-col justify-between rounded-2xl bg-ink-grad p-6 text-ivory md:p-7 xl:col-span-1">
                       <div>
                         <p className="eyebrow !text-gold-light">Can’t decide?</p>
-                        <p className="mt-3 font-display text-3xl font-semibold leading-tight">Get a free shortlist from our advisor</p>
+                        <p className="mt-3 font-display text-2xl font-semibold leading-tight md:text-3xl">Get a free shortlist from our advisor</p>
                         <p className="mt-2 text-sm text-ivory/60">Tell us your budget & location. We’ll share the best 5 options on WhatsApp.</p>
                       </div>
                       <button onClick={() => openLead({ intent: 'Get Free Shortlist', source: 'Listing Inline CTA' })} className="btn-gold mt-6 self-start">Get my shortlist</button>

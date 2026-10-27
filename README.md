@@ -20,7 +20,8 @@ Phase 1: complete public website (frontend) with sample data, search & filters, 
 | `/developers`, `/developers/[slug]` | Developer listing & detail (with all their projects) |
 | `/property/[slug]` | Property detail: gallery + lightbox, auto popup (3 sec), price table, floor plan unlock, amenities, map, developer, EMI, FAQ, similar, sticky mobile CTA |
 | `/home-loan` | EMI calculator + amortisation schedule + loan guide (`/emi-calculator` redirects here) |
-| `/about`, `/services`, `/contact`, `/blog`, `/blog/[slug]` | Company pages & blog |
+| `/localities` | All localities grouped by city |
+| `/about` (stats + FAQ), `/contact` (FAQ), `/blog`, `/blog/[slug]` | Company pages & blog (`/services` redirects to `/about`) |
 | `/privacy-policy`, `/terms-and-conditions`, `/disclaimer`, `/rera-disclaimer`, `/cookie-policy` | Legal |
 | `/shortlist`, `/thank-you`, `/sitemap.xml`, `/robots.txt` | Utility |
 
@@ -28,6 +29,7 @@ Phase 1: complete public website (frontend) with sample data, search & filters, 
 - Contact details, top-bar notice: `lib/site.ts`
 - Properties: `lib/data/properties.ts` (25 sample listings — 5 cities × 5 types)
 - Developers: `lib/data/developers.ts` · Cities: `lib/data/cities.ts` · Blogs: `lib/data/blogs.ts` · Legal: `lib/data/legal.ts`
+- Reviews (marked as sample on the site): `lib/data/reviews.ts` — replace with real client reviews
 - In Phase 2 all of this moves to the admin panel + MongoDB.
 
 ## Run locally
@@ -49,3 +51,6 @@ npm run dev                  # http://localhost:3000
 5. Test: open any property page → popup appears in 3 seconds → submit → you receive an email.
 6. Custom domain (optional): Settings → Domains → add `realtechx.in` (or your domain) and set the DNS records Vercel shows.
 7. SEO: add the site in **Google Search Console**, submit `https://your-domain/sitemap.xml`.
+
+## Updating the live site
+Upload the changed files to GitHub (drag & drop the folders `app`, `components`, `lib`, `public` and the root files onto **Add file → Upload files**, then **Commit changes**). Vercel redeploys automatically within 1–2 minutes.

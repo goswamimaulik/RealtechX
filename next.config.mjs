@@ -13,6 +13,7 @@ const nextConfig = {
     return [
       { source: '/emi-calculator', destination: '/home-loan#emi-calculator', permanent: true },
       { source: '/projects', destination: '/properties', permanent: true },
+      { source: '/services', destination: '/about', permanent: true },
     ];
   },
 };
