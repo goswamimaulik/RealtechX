@@ -13,10 +13,16 @@ export function handle<A extends unknown[]>(fn: (...args: A) => Promise<unknown>
       const msg = e instanceof Error ? e.message : String(e);
       console.error('[admin api]', e);
       if (/E11000|duplicate/i.test(msg)) return NextResponse.json({ ok: false, error: 'An item with this slug / email already exists.' }, { status: 409 });
-      if (/ECONNREFUSED|ENOTFOUND|Server selection|MongoServerSelection|querySrv/i.test(msg)) {
+      if (/bad auth|authentication failed|auth failed/i.test(msg)) {
+        return NextResponse.json({ ok: false, error: 'Database login failed: the username/password inside MONGODB_URI is wrong. Fix it in Vercel → Environment Variables and redeploy.' }, { status: 503 });
+      }
+      if (/Invalid scheme|URI must include|mongodb\+srv|Invalid connection string|URI malformed|Password contains unescaped/i.test(msg)) {
+        return NextResponse.json({ ok: false, error: 'MONGODB_URI is not a valid connection string. Copy it again from Atlas → Connect → Drivers.' }, { status: 503 });
+      }
+      if (/ECONNREFUSED|ENOTFOUND|Server selection|MongoServerSelection|querySrv|timed out/i.test(msg)) {
         return NextResponse.json({ ok: false, error: 'Cannot reach the database. Check MONGODB_URI and Atlas Network Access (allow 0.0.0.0/0).' }, { status: 503 });
       }
-      return NextResponse.json({ ok: false, error: 'Something went wrong. Please try again.' }, { status: 500 });
+      return NextResponse.json({ ok: false, error: `Something went wrong: ${msg.slice(0, 160)}` }, { status: 500 });
     }
   };
 }
