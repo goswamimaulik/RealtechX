@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { CheckCircle2, Loader2, ShieldCheck } from 'lucide-react';
 import PhoneField, { validatePhone } from './PhoneField';
 
@@ -27,6 +27,7 @@ export default function LeadForm({
 }: LeadFormProps) {
   const [state, setState] = useState<'idle' | 'loading' | 'done' | 'error'>('idle');
   const [error, setError] = useState('');
+  const mountedAt = useRef(Date.now());
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -55,8 +56,15 @@ export default function LeadForm({
           property: property || '',
           intent: intent || cta,
           page: typeof window !== 'undefined' ? window.location.href : '',
+          elapsed: Date.now() - (mountedAt.current ?? 0),
         }),
       });
+      if (res.status === 429 || res.status === 422) {
+        const j = await res.json().catch(() => ({}));
+        setState('idle');
+        setError(j.error || 'Please check your details and try again.');
+        return;
+      }
       if (!res.ok) throw new Error();
       setState('done');
       onSuccess?.();

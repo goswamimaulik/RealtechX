@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { BadgePercent, CalendarCheck, FileText, PhoneCall, ShieldCheck, X } from 'lucide-react';
 import LeadForm from './LeadForm';
-import { site } from '@/lib/site';
+import { useSite } from './SiteContext';
 
 export interface LeadModalDetail {
   title?: string;
@@ -29,6 +29,7 @@ const perks = [
 /** Mounted once in the root layout; any component can call openLead(). */
 export default function LeadModalHost() {
   const [detail, setDetail] = useState<LeadModalDetail | null>(null);
+  const site = useSite();
 
   useEffect(() => {
     const handler = (e: Event) => setDetail({ ...((e as CustomEvent<LeadModalDetail>).detail || {}) });

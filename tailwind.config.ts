@@ -33,6 +33,7 @@ const config: Config = {
         slideInRight: { '0%': { transform: 'translateX(100%)' }, '100%': { transform: 'translateX(0)' } },
         slideOutRight: { '0%': { transform: 'translateX(0)' }, '100%': { transform: 'translateX(100%)' } },
         sheetUp: { '0%': { transform: 'translateY(100%)' }, '100%': { transform: 'translateY(0)' } },
+        slideInLeft: { '0%': { transform: 'translateX(-100%)' }, '100%': { transform: 'translateX(0)' } },
       },
       animation: {
         fadeUp: 'fadeUp .7s ease both',
@@ -43,6 +44,7 @@ const config: Config = {
         slideInRight: 'slideInRight .3s cubic-bezier(.2,.8,.2,1) both',
         slideOutRight: 'slideOutRight .26s ease-in both',
         sheetUp: 'sheetUp .35s cubic-bezier(.2,.8,.2,1) both',
+        slideInLeft: 'slideInLeft .3s cubic-bezier(.2,.8,.2,1) both',
       },
     },
   },

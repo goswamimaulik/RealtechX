@@ -8,7 +8,7 @@ import {
   ArrowRight, Building2, ChevronDown, Heart, Home, KeyRound, Mail, Menu, MessageCircle, Phone, Plus, Tag, X,
 } from 'lucide-react';
 import Logo from './Logo';
-import { site } from '@/lib/site';
+import { useSite } from './SiteContext';
 import type { NavItem } from '@/lib/nav';
 import { useShortlist } from './useShortlist';
 import { openLead } from './LeadModal';
@@ -20,6 +20,7 @@ export default function Header({ nav }: { nav: NavItem[] }) {
   const [hover, setHover] = useState<string | null>(null);
   const pathname = usePathname();
   const { items } = useShortlist();
+  const site = useSite();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -60,7 +61,7 @@ export default function Header({ nav }: { nav: NavItem[] }) {
       onMouseLeave={() => setHover(null)}
     >
       <div className="container flex h-16 items-stretch justify-between gap-4 lg:h-[74px]">
-        <div className="flex items-center"><Logo /></div>
+        <div className="flex items-center"><Logo name={site.name} logoUrl={site.logoUrl} /></div>
 
         {/* ───── Desktop nav ───── */}
         <nav className="hidden items-stretch lg:flex" aria-label="Main">
@@ -167,7 +168,7 @@ export default function Header({ nav }: { nav: NavItem[] }) {
           <div className={`absolute inset-0 bg-ink/60 backdrop-blur-[2px] ${drawer === 'open' ? 'animate-fadeIn' : 'animate-fadeOut'}`} onClick={closeDrawer} />
           <aside className={`absolute inset-y-0 right-0 flex w-[88%] max-w-[400px] flex-col overflow-hidden bg-white shadow-2xl ${drawer === 'open' ? 'animate-slideInRight' : 'animate-slideOutRight'}`}>
             <div className="flex h-16 shrink-0 items-center justify-between border-b border-ink/[0.06] px-5">
-              <Logo />
+              <Logo name={site.name} logoUrl={site.logoUrl} />
               <button onClick={closeDrawer} className="grid h-10 w-10 place-items-center rounded-full bg-ivory transition active:scale-95" aria-label="Close menu">
                 <X className="h-5 w-5" />
               </button>

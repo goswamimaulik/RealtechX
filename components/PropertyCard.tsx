@@ -4,9 +4,7 @@ import Link from 'next/link';
 import { Heart, MapPin, MessageCircle, Phone } from 'lucide-react';
 import type { CardProperty } from '@/lib/types';
 import { areaCompact, configLabel, contactOf, priceRange, titleCase } from '@/lib/format';
-import { getCity } from '@/lib/data/cities';
-import { getDeveloper } from '@/lib/data/developers';
-import { site } from '@/lib/site';
+import { useSite } from './SiteContext';
 import SmartImage from './SmartImage';
 import { useShortlist } from './useShortlist';
 import { openLead } from './LeadModal';
@@ -34,8 +32,7 @@ const typeBadge: Record<string, string> = {
 
 export default function PropertyCard({ p, layout = 'grid' }: { p: CardProperty; layout?: 'grid' | 'list' }) {
   const { has, toggle } = useShortlist();
-  const city = getCity(p.city);
-  const dev = getDeveloper(p.developer);
+  const site = useSite();
   const saved = has(p.id);
   const list = layout === 'list';
   const contact = contactOf(p, site);
@@ -61,7 +58,7 @@ export default function PropertyCard({ p, layout = 'grid' }: { p: CardProperty; 
         >
           <Heart className={`h-4 w-4 ${saved ? 'fill-current' : ''}`} />
         </button>
-        <p className="pointer-events-none absolute bottom-3 left-3 right-3 truncate text-[12px] font-medium text-white/90">by {dev?.name}</p>
+        {p.developerName && <p className="pointer-events-none absolute bottom-3 left-3 right-3 truncate text-[12px] font-medium text-white/90">by {p.developerName}</p>}
       </div>
 
       <div className="flex min-w-0 flex-1 flex-col p-4 md:p-5">
@@ -70,7 +67,7 @@ export default function PropertyCard({ p, layout = 'grid' }: { p: CardProperty; 
         </Link>
         <p className="mt-1 flex items-center gap-1 text-[13px] text-muted">
           <MapPin className="h-3.5 w-3.5 shrink-0 text-gold-dark" />
-          <span className="truncate">{p.locality}, {city?.name}</span>
+          <span className="truncate">{p.locality}, {p.cityName}</span>
         </p>
 
         <p className="mt-3 font-display text-[21px] font-semibold leading-none text-ink">{priceRange(p)}</p>

@@ -5,8 +5,13 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { LayoutGrid, List, Search, SlidersHorizontal, X, ArrowUpDown, ChevronDown } from 'lucide-react';
 import type { CardProperty } from '@/lib/types';
 import { navTypes, statuses, budgetBuy, budgetRent } from '@/lib/site';
-import { cities } from '@/lib/data/cities';
-import { developers } from '@/lib/data/developers';
+
+type Opt = { slug: string; name: string };
+const uniq = (list: Opt[]) => {
+  const m = new Map<string, string>();
+  list.forEach((o) => o.slug && !m.has(o.slug) && m.set(o.slug, o.name));
+  return Array.from(m, ([slug, name]) => ({ slug, name })).sort((a, b) => a.name.localeCompare(b.name));
+};
 import PropertyCard from './PropertyCard';
 import { openLead } from './LeadModal';
 
@@ -19,12 +24,17 @@ export default function PropertiesExplorer({
   syncUrl = false,
   hide = [],
   preset = {},
+  cityOptions,
 }: {
   items: CardProperty[];
   syncUrl?: boolean;
   hide?: Key[];
   preset?: Partial<Filters>;
+  /** optional ordered city list (defaults to the cities present in `items`) */
+  cityOptions?: Opt[];
 }) {
+  const cities = useMemo(() => cityOptions ?? uniq(items.map((p) => ({ slug: p.city, name: p.cityName }))), [cityOptions, items]);
+  const developers = useMemo(() => uniq(items.map((p) => ({ slug: p.developer, name: p.developerName }))), [items]);
   const sp = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -77,8 +87,7 @@ export default function PropertiesExplorer({
       if (f.bhk && !p.bhk.includes(Number(f.bhk)) && !(f.bhk === '5' && p.bhk.some((b) => b >= 5))) return false;
       if (f.budget && (!p.priceMin || (p.priceMax || p.priceMin) < bMin || p.priceMin > bMax)) return false;
       if (q) {
-        const dev = developers.find((d) => d.slug === p.developer)?.name ?? '';
-        const hay = `${p.title} ${p.locality} ${p.city} ${p.type} ${dev} ${p.tagline}`.toLowerCase();
+        const hay = `${p.title} ${p.locality} ${p.city} ${p.cityName} ${p.type} ${p.developerName} ${p.tagline}`.toLowerCase();
         if (!q.split(/\s+/).every((w) => hay.includes(w))) return false;
       }
       return true;
@@ -95,7 +104,7 @@ export default function PropertiesExplorer({
 
   const activeChips = (Object.keys(f) as Key[])
     .filter((k) => f[k] && k !== 'sort' && !hide.includes(k) && preset[k] !== f[k])
-    .map((k) => ({ k, label: chipLabel(k, f[k]) }));
+    .map((k) => ({ k, label: chipLabel(k, f[k], cities, developers) }));
 
   const budgets = f.for === 'rent' ? budgetRent : budgetBuy;
 
@@ -274,7 +283,7 @@ function Group({ title, children }: { title: string; children: React.ReactNode }
   );
 }
 
-function chipLabel(k: Key, v: string) {
+function chipLabel(k: Key, v: string, cities: Opt[], developers: Opt[]) {
   switch (k) {
     case 'for': return v === 'rent' ? 'Rent' : 'Buy';
     case 'type': return navTypes.find((t) => t.slug === v)?.label ?? v;

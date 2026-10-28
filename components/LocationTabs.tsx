@@ -15,7 +15,7 @@ const km = (d: string) => parseFloat(d.replace(/[^\d.]/g, '')) || 0;
 const driveMin = (d: string) => Math.max(2, Math.round(km(d) * 2.2));
 
 /** "Locality report" — nearby places grouped into tabs, with distance + estimated drive time and a map. */
-export default function LocationTabs({ nearby, mapQuery, title, locality }: { nearby: Item[]; mapQuery: string; title: string; locality?: string }) {
+export default function LocationTabs({ nearby, mapQuery, title, locality, zoom = 13 }: { nearby: Item[]; mapQuery: string; title: string; locality?: string; zoom?: number }) {
   const used = new Set<string>();
   const buckets = groups
     .map((g) => {
@@ -47,7 +47,7 @@ export default function LocationTabs({ nearby, mapQuery, title, locality }: { ne
           <a href={mapsUrl} target="_blank" rel="noopener" className="btn-outline shrink-0 !py-2.5 text-[13px]">Open in Google Maps <ExternalLink className="h-3.5 w-3.5" /></a>
         </div>
         <div className="relative h-[300px] bg-ivory lg:h-[380px]">
-          <iframe title={`Map of ${title}`} src={`https://maps.google.com/maps?q=${encodeURIComponent(mapQuery)}&z=13&output=embed`} className="absolute inset-0 h-full w-full border-0" loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
+          <iframe title={`Map of ${title}`} src={`https://maps.google.com/maps?q=${encodeURIComponent(mapQuery)}&z=${zoom}&output=embed`} className="absolute inset-0 h-full w-full border-0" loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
         </div>
       </div>
     );
@@ -97,7 +97,7 @@ export default function LocationTabs({ nearby, mapQuery, title, locality }: { ne
         <div className="relative min-h-[260px] border-t border-ink/[0.06] bg-ivory lg:min-h-[360px] lg:border-l lg:border-t-0">
           <iframe
             title={`Map of ${title}`}
-            src={`https://maps.google.com/maps?q=${encodeURIComponent(mapQuery)}&z=13&output=embed`}
+            src={`https://maps.google.com/maps?q=${encodeURIComponent(mapQuery)}&z=${zoom}&output=embed`}
             className="absolute inset-0 h-full w-full border-0"
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"

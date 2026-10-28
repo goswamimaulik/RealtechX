@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Building, Building2, ChevronDown, Home, MapPin, Search, Wallet, X } from 'lucide-react';
-import { cities } from '@/lib/data/cities';
 import type { SearchIndex } from '@/lib/nav';
 import { budgetBuy, budgetRent, navTypes } from '@/lib/site';
 
@@ -89,7 +88,7 @@ export default function HeroSearch({ index }: { index: SearchIndex }) {
   const cityOptions = (
     <>
       <option value="">All cities</option>
-      {cities.map((c) => <option key={c.slug} value={c.slug}>{c.name}</option>)}
+      {index.cities.map((c) => <option key={c.slug} value={c.slug}>{c.name}</option>)}
     </>
   );
   const typeSelectOptions = (

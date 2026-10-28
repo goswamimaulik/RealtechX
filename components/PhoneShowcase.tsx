@@ -1,12 +1,11 @@
 import { CheckCircle2, Heart, MapPin, MessageCircle, Search } from 'lucide-react';
 import SmartImage from './SmartImage';
 import { LeadButton } from './LeadButtons';
-import { site } from '@/lib/site';
 import type { Property } from '@/lib/types';
 import { startPrice, configLabel } from '@/lib/format';
 
 /** "Your partner in finding a home" CTA with an on-brand phone mockup. */
-export default function PhoneShowcase({ featured }: { featured: Property[] }) {
+export default function PhoneShowcase({ featured, whatsapp, name = 'RealtechX', title, text }: { featured: Property[]; whatsapp: string; name?: string; title: string; text: string }) {
   const [a, b] = featured;
   return (
     <section className="relative overflow-hidden bg-ink py-16 text-ivory md:py-24">
@@ -15,9 +14,9 @@ export default function PhoneShowcase({ featured }: { featured: Property[] }) {
       <div className="container relative grid items-center gap-12 lg:grid-cols-2">
         <div>
           <p className="eyebrow !text-gold-light">Personal shortlist</p>
-          <h2 className="h-section mt-3 text-balance">RealtechX, your partner in finding the right property</h2>
+          <h2 className="h-section mt-3 text-balance">{title}</h2>
           <p className="mt-4 max-w-lg text-[15px] leading-relaxed text-ivory/70">
-            Tell us your budget, city and configuration. Our advisor sends you 3 handpicked projects on WhatsApp within 24 hours — with price sheets and floor plans.
+            {text}
           </p>
           <ul className="mt-7 grid gap-3 text-sm text-ivory/85 sm:grid-cols-2">
             {['Shortlist matched to your budget', 'Price sheet & floor plans', 'Free site visit scheduling', 'Home loan assistance'].map((t) => (
@@ -28,7 +27,7 @@ export default function PhoneShowcase({ featured }: { featured: Property[] }) {
             <LeadButton className="btn-gold" intent="Get My Shortlist" source="Phone Showcase" title="Get 3 handpicked projects on WhatsApp" subtitle="Share your requirement — we reply within 24 hours.">
               Get my shortlist
             </LeadButton>
-            <a href={`https://wa.me/${site.whatsapp}?text=${encodeURIComponent('Hi RealtechX, please share a property shortlist for me.')}`} target="_blank" rel="noopener" className="btn-ghost-light">
+            <a href={`https://wa.me/${whatsapp}?text=${encodeURIComponent(`Hi ${name}, please share a property shortlist for me.`)}`} target="_blank" rel="noopener" className="btn-ghost-light">
               <MessageCircle className="h-4 w-4" /> Chat on WhatsApp
             </a>
           </div>
