@@ -2,10 +2,21 @@
 
 import { useState } from 'react';
 import { ChevronDown, Sparkles } from 'lucide-react';
+import { openLead } from '../LeadModal';
 
-export default function Amenities({ items, initial = 8 }: { items: string[]; initial?: number }) {
+export default function Amenities({ items, initial = 8, property }: { items: string[]; initial?: number; property?: string }) {
   const [all, setAll] = useState(false);
   const shown = all ? items : items.slice(0, initial);
+  if (!items.length) {
+    return (
+      <div className="flex flex-col items-start gap-4 rounded-2xl border border-dashed border-ink/15 bg-white p-5 sm:flex-row sm:items-center sm:justify-between md:p-6">
+        <p className="text-[14px] text-ink/70">The full amenity list for {property ?? 'this project'} is available on request — we’ll share it with the brochure.</p>
+        <button type="button" onClick={() => openLead({ property, intent: 'Get Amenity List', source: 'Amenities (on request)' })} className="btn-ink shine shrink-0 !py-2.5 text-[13px]">
+          Get amenity list
+        </button>
+      </div>
+    );
+  }
   return (
     <div>
       <ul className="grid grid-cols-2 gap-2.5 md:grid-cols-4 md:gap-3">

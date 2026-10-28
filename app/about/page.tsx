@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 };
 
 const faqs = [
-  { q: 'What is RealtechX?', a: 'RealtechX is a premium real estate portal for discovering residential apartments, commercial spaces, plots, land and luxury villas — for sale and rent — across Mumbai, Pune, Bangalore, Hyderabad, Ahmedabad and Surat.' },
+  { q: 'What is RealtechX?', a: 'RealtechX is a premium real estate portal for discovering residential apartments, commercial spaces, plots, land and luxury villas — for sale and rent — across 10 Indian cities including Mumbai, Pune, Bangalore, Hyderabad, Gurugram and Noida.' },
   { q: 'Does RealtechX charge buyers any brokerage?', a: 'No. Searching, shortlisting, enquiring and booking site visits through RealtechX is free for buyers and tenants.' },
   { q: 'Are the listings on RealtechX RERA verified?', a: 'RealtechX is currently a preview portal and listings are sample projects for demonstration. Always verify any project on the respective state RERA website before booking.' },
   { q: 'Which cities does RealtechX cover?', a: `We currently cover ${cities.map((c) => c.name).join(', ')}, and are adding new cities and localities every month.` },
@@ -35,7 +35,7 @@ export default function AboutPage() {
             <h2 className="h-section mt-3">Built for buyers who value clarity</h2>
             <div className="prose-luxe mt-6">
               <p>Searching for property in India often means incomplete listings, hidden prices and endless follow-up calls. RealtechX was created to change that — with a portal where every project is presented with full pricing, configurations, amenities and location insights on a single, beautiful page.</p>
-              <p>We cover residential apartments, commercial spaces, plots, land and luxury villas across six of India’s fastest-growing cities, and we are expanding city by city.</p>
+              <p>We cover residential apartments, commercial spaces, plots, land and luxury villas across 10 of India’s fastest-growing cities, and we are expanding city by city.</p>
               <p>Behind the portal is a team that understands real estate websites, search and lead management — so developers and channel partners get qualified enquiries, and buyers get answers.</p>
             </div>
           </div>

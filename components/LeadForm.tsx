@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { CheckCircle2, Loader2, ShieldCheck } from 'lucide-react';
+import PhoneField, { validatePhone } from './PhoneField';
 
 export interface LeadFormProps {
   source: string; // e.g. "Property Popup", "Contact Page"
@@ -30,11 +31,13 @@ export default function LeadForm({
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
-    const phone = String(fd.get('phone') || '').replace(/\D/g, '').slice(-10);
-    if (!/^[6-9]\d{9}$/.test(phone)) {
-      setError('Please enter a valid 10-digit mobile number.');
+    const countryCode = String(fd.get('countryCode') || '+91');
+    const check = validatePhone(countryCode, String(fd.get('phone') || ''));
+    if (!check.ok) {
+      setError(check.error);
       return;
     }
+    const phone = check.number;
     setError('');
     setState('loading');
     try {
@@ -43,6 +46,7 @@ export default function LeadForm({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: fd.get('name'),
+          countryCode,
           phone,
           email: fd.get('email') || '',
           message: fd.get('message') || '',
@@ -80,16 +84,11 @@ export default function LeadForm({
     <form onSubmit={submit} className="space-y-3" noValidate>
       <input type="text" name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
       <input name="name" required placeholder="Full name *" className={inputCls} autoComplete="name" />
-      <div className="flex">
-        <span className={`grid place-items-center rounded-l-xl border border-r-0 px-3 text-sm font-semibold ${dark ? 'border-white/15 bg-white/10 text-ivory' : 'border-ink/10 bg-ivory-200 text-ink'}`}>
-          +91
-        </span>
-        <input name="phone" required inputMode="numeric" maxLength={10} placeholder="Mobile number *" className={`${inputCls} !rounded-l-none`} autoComplete="tel-national" />
-      </div>
+      <PhoneField dark={dark} inputCls={inputCls} />
       {showEmail && <input name="email" type="email" placeholder="Email (optional)" className={inputCls} autoComplete="email" />}
       {showMessage && <textarea name="message" rows={3} placeholder="Tell us what you are looking for" className={inputCls} />}
       {error && <p className="text-xs font-semibold text-red-500">{error}</p>}
-      <button type="submit" disabled={state === 'loading'} className="btn-gold w-full !py-3.5">
+      <button type="submit" disabled={state === 'loading'} className="btn-gold shine w-full !py-3.5">
         {state === 'loading' ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
         {cta}
       </button>

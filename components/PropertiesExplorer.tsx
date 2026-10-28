@@ -2,8 +2,8 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { LayoutGrid, List, Search, SlidersHorizontal, X } from 'lucide-react';
-import type { Property } from '@/lib/types';
+import { LayoutGrid, List, Search, SlidersHorizontal, X, ArrowUpDown, ChevronDown } from 'lucide-react';
+import type { CardProperty } from '@/lib/types';
 import { navTypes, statuses, budgetBuy, budgetRent } from '@/lib/site';
 import { cities } from '@/lib/data/cities';
 import { developers } from '@/lib/data/developers';
@@ -20,7 +20,7 @@ export default function PropertiesExplorer({
   hide = [],
   preset = {},
 }: {
-  items: Property[];
+  items: CardProperty[];
   syncUrl?: boolean;
   hide?: Key[];
   preset?: Partial<Filters>;
@@ -75,7 +75,7 @@ export default function PropertiesExplorer({
       if (f.status && p.status !== f.status) return false;
       if (f.developer && p.developer !== f.developer) return false;
       if (f.bhk && !p.bhk.includes(Number(f.bhk)) && !(f.bhk === '5' && p.bhk.some((b) => b >= 5))) return false;
-      if (f.budget && (p.priceMax < bMin || p.priceMin > bMax)) return false;
+      if (f.budget && (!p.priceMin || (p.priceMax || p.priceMin) < bMin || p.priceMin > bMax)) return false;
       if (q) {
         const dev = developers.find((d) => d.slug === p.developer)?.name ?? '';
         const hay = `${p.title} ${p.locality} ${p.city} ${p.type} ${dev} ${p.tagline}`.toLowerCase();
@@ -84,9 +84,11 @@ export default function PropertiesExplorer({
       return true;
     });
     const sorted = [...list];
-    if (f.sort === 'price-asc') sorted.sort((a, b) => a.priceMin - b.priceMin);
-    else if (f.sort === 'price-desc') sorted.sort((a, b) => b.priceMin - a.priceMin);
-    else if (f.sort === 'featured') sorted.sort((a, b) => Number(b.featured) - Number(a.featured));
+    // "price on request" (0) always sorts last
+    if (f.sort === 'price-asc') sorted.sort((a, b) => (a.priceMin || Infinity) - (b.priceMin || Infinity));
+    else if (f.sort === 'price-desc') sorted.sort((a, b) => (b.priceMin || -1) - (a.priceMin || -1));
+    else if (f.sort === 'area-desc') sorted.sort((a, b) => (b.areaUnit === 'acre' ? b.areaMax * 43560 : b.areaMax) - (a.areaUnit === 'acre' ? a.areaMax * 43560 : a.areaMax));
+    else if (f.sort === 'featured') sorted.sort((a, b) => Number(b.featured) - Number(a.featured) || Number(b.source === 'published') - Number(a.source === 'published'));
     else sorted.sort((a, b) => b.postedOn.localeCompare(a.postedOn));
     return sorted;
   }, [items, f]);
@@ -182,12 +184,18 @@ export default function PropertiesExplorer({
           />
         </div>
         <div className="flex gap-2">
-          <select value={f.sort} onChange={(e) => setF((p) => ({ ...p, sort: e.target.value }))} className="input min-w-0 flex-1 !py-2.5 md:!w-auto md:flex-none" aria-label="Sort">
-            <option value="newest">Newest first</option>
-            <option value="featured">Featured</option>
-            <option value="price-asc">Price: Low to High</option>
-            <option value="price-desc">Price: High to Low</option>
-          </select>
+          <label className="relative flex min-w-0 flex-1 items-center rounded-xl border border-ink/10 bg-white pl-3 md:flex-none">
+            <ArrowUpDown className="h-4 w-4 shrink-0 text-gold-dark" />
+            <span className="ml-2 hidden whitespace-nowrap text-[12px] font-medium text-muted sm:inline">Sort by</span>
+            <select value={f.sort} onChange={(e) => setF((p) => ({ ...p, sort: e.target.value }))} className="min-w-0 flex-1 cursor-pointer appearance-none bg-transparent py-2.5 pl-2 pr-8 text-[14px] font-semibold text-ink outline-none" aria-label="Sort by">
+              <option value="newest">Newest first</option>
+              <option value="featured">Featured / real projects</option>
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
+              <option value="area-desc">Area: Largest first</option>
+            </select>
+            <ChevronDown className="pointer-events-none absolute right-2.5 h-4 w-4 text-muted" />
+          </label>
           <button onClick={() => setDrawer(true)} className="btn-ink !px-4 lg:hidden"><SlidersHorizontal className="h-4 w-4" /> Filters</button>
           <div className="hidden overflow-hidden rounded-xl border border-ink/10 md:flex">
             <button onClick={() => setView('grid')} className={`px-3 ${view === 'grid' ? 'bg-ink text-ivory' : 'bg-white'}`} aria-label="Grid view"><LayoutGrid className="h-4 w-4" /></button>

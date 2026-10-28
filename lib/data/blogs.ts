@@ -157,6 +157,7 @@ export const blogs: BlogPost[] = [
   },
   {
     slug: 'why-north-bangalore-is-a-growth-corridor',
+    city: 'bangalore',
     title: 'Why North Bangalore Is a Real Estate Growth Corridor',
     excerpt: 'The airport, aerospace SEZ and improving connectivity have made Devanahalli and Hebbal hot markets.',
     category: 'Market Insights',

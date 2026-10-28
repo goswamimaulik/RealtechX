@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 import { Heart, MapPin, MessageCircle, Phone } from 'lucide-react';
-import type { Property } from '@/lib/types';
-import { areaCompact, configLabel, priceRange, titleCase } from '@/lib/format';
+import type { CardProperty } from '@/lib/types';
+import { areaCompact, configLabel, contactOf, priceRange, titleCase } from '@/lib/format';
 import { getCity } from '@/lib/data/cities';
 import { getDeveloper } from '@/lib/data/developers';
 import { site } from '@/lib/site';
@@ -24,25 +24,35 @@ const typeNoun: Record<string, string> = {
   land: 'Land',
   villa: 'Villas',
 };
+const typeBadge: Record<string, string> = {
+  residential: 'Residential',
+  commercial: 'Commercial',
+  plot: 'Plot',
+  land: 'Land',
+  villa: 'Villa',
+};
 
-export default function PropertyCard({ p, layout = 'grid' }: { p: Property; layout?: 'grid' | 'list' }) {
+export default function PropertyCard({ p, layout = 'grid' }: { p: CardProperty; layout?: 'grid' | 'list' }) {
   const { has, toggle } = useShortlist();
   const city = getCity(p.city);
   const dev = getDeveloper(p.developer);
   const saved = has(p.id);
   const list = layout === 'list';
-  const wa = `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(`Hi, I'm interested in ${p.title} (${p.id}).`)}`;
+  const contact = contactOf(p, site);
+  const wa = `https://wa.me/${contact.wa}?text=${encodeURIComponent(`Hi, I'm interested in ${p.title} (${p.id}).`)}`;
 
   return (
     <article className={`group relative flex h-full overflow-hidden rounded-[20px] border border-ink/[0.07] bg-white shadow-[0_6px_24px_-14px_rgba(11,16,32,.25)] transition duration-300 hover:-translate-y-1 hover:shadow-luxe ${list ? 'flex-col sm:flex-row' : 'flex-col'}`}>
       <div className={`relative shrink-0 overflow-hidden ${list ? 'aspect-[16/11] sm:aspect-auto sm:w-[42%]' : 'aspect-[16/11]'}`}>
         <Link href={`/property/${p.slug}`} aria-label={p.title} className="absolute inset-0">
-          <SmartImage src={p.images[0]} alt={`${p.title}, ${p.locality}`} fill sizes="(max-width: 640px) 85vw, (max-width: 1024px) 45vw, 30vw" className="object-cover transition duration-700 group-hover:scale-[1.06]" />
+          <SmartImage src={p.image} alt={`${p.title}, ${p.locality}`} fill sizes="(max-width: 640px) 85vw, (max-width: 1024px) 45vw, 30vw" className="object-cover transition duration-700 group-hover:scale-[1.06]" />
         </Link>
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/60 via-transparent to-ink/10" />
-        <div className="pointer-events-none absolute left-3 top-3 flex gap-1.5">
+        <div className="pointer-events-none absolute left-3 right-14 top-3 flex flex-wrap gap-1.5">
           <span className={`rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider shadow-sm ${statusTone[p.status]}`}>{titleCase(p.status)}</span>
-          {p.listingFor === 'rent' && <span className="rounded-full bg-ink/80 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white backdrop-blur">For rent</span>}
+          <span className="rounded-full bg-ink/75 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white backdrop-blur">
+            {typeBadge[p.type]}{p.listingFor === 'rent' ? ' · Rent' : ''}
+          </span>
         </div>
         <button
           onClick={() => toggle(p.id)}
@@ -80,7 +90,7 @@ export default function PropertyCard({ p, layout = 'grid' }: { p: Property; layo
 
         <div className="mt-auto flex items-center gap-2 pt-4">
           <button
-            onClick={() => openLead({ property: p.title, intent: 'Get Best Price', source: 'Property Card', image: p.images[0] })}
+            onClick={() => openLead({ property: p.title, intent: 'Get Best Price', source: 'Property Card', image: p.image })}
             className="btn-ink flex-1 !px-4 !py-2.5 text-[13px]"
           >
             Enquire now
@@ -88,7 +98,7 @@ export default function PropertyCard({ p, layout = 'grid' }: { p: Property; layo
           <a href={wa} target="_blank" rel="noopener" className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-ink/10 text-[#1DA851] transition hover:border-[#25D366] hover:bg-[#25D366] hover:text-white" aria-label="WhatsApp">
             <MessageCircle className="h-4 w-4" />
           </a>
-          <a href={`tel:${site.phoneRaw}`} className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-ink/10 transition hover:border-gold hover:bg-gold hover:text-ink" aria-label="Call">
+          <a href={`tel:${contact.tel}`} className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-ink/10 transition hover:border-gold hover:bg-gold hover:text-ink" aria-label="Call">
             <Phone className="h-4 w-4" />
           </a>
         </div>

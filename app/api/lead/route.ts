@@ -13,6 +13,7 @@ type LeadBody = {
   intent?: string;
   page?: string;
   website?: string; // honeypot
+  countryCode?: string;
 };
 
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
@@ -29,14 +30,17 @@ export async function POST(req: Request) {
   if (body.website) return NextResponse.json({ ok: true });
 
   const name = String(body.name || '').trim().slice(0, 80);
-  const phone = String(body.phone || '').replace(/\D/g, '').slice(-10);
-  if (!name || !/^[6-9]\d{9}$/.test(phone)) {
+  const countryCode = /^\+\d{1,4}$/.test(String(body.countryCode || '')) ? String(body.countryCode) : '+91';
+  const digits = String(body.phone || '').replace(/\D/g, '');
+  const phone = countryCode === '+91' ? digits.slice(-10) : digits;
+  const valid = countryCode === '+91' ? /^[6-9]\d{9}$/.test(phone) : /^\d{6,14}$/.test(phone);
+  if (!name || !valid) {
     return NextResponse.json({ ok: false, error: 'Name and a valid mobile number are required' }, { status: 422 });
   }
 
   const lead = {
     name,
-    phone: '+91 ' + phone,
+    phone: `${countryCode} ${phone}`,
     email: String(body.email || '').trim().slice(0, 120),
     message: String(body.message || '').trim().slice(0, 2000),
     source: String(body.source || 'Website').slice(0, 120),

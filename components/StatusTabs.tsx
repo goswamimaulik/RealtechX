@@ -3,12 +3,12 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
-import type { Property } from '@/lib/types';
+import type { CardProperty } from '@/lib/types';
 import { statuses } from '@/lib/site';
 import PropertyCard from './PropertyCard';
 import Carousel from './Carousel';
 
-export default function StatusTabs({ items }: { items: Property[] }) {
+export default function StatusTabs({ items, counts }: { items: CardProperty[]; counts: Record<string, number> }) {
   const [tab, setTab] = useState<string>(statuses[0].slug);
   const list = items.filter((p) => p.status === tab).slice(0, 8);
   const label = statuses.find((s) => s.slug === tab)?.label;
@@ -17,7 +17,7 @@ export default function StatusTabs({ items }: { items: Property[] }) {
       <div className="no-scrollbar -mx-4 mb-6 flex gap-2 overflow-x-auto px-4 md:mx-0 md:mb-8 md:justify-center md:px-0">
         {statuses.map((s) => (
           <button key={s.slug} onClick={() => setTab(s.slug)} className={`chip shrink-0 !px-4 !py-2.5 !text-[13px] md:!px-5 ${tab === s.slug ? 'chip-active' : ''}`}>
-            {s.label} <span className="opacity-60">({items.filter((p) => p.status === s.slug).length})</span>
+            {s.label} <span className="opacity-60">({counts[s.slug] ?? 0})</span>
           </button>
         ))}
       </div>

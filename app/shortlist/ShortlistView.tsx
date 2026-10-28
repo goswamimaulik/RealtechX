@@ -5,11 +5,11 @@ import { Heart } from 'lucide-react';
 import PropertyCard from '@/components/PropertyCard';
 import { useShortlist } from '@/components/useShortlist';
 import { openLead } from '@/components/LeadModal';
-import { properties } from '@/lib/data/properties';
+import type { CardProperty } from '@/lib/types';
 
-export default function ShortlistView() {
+export default function ShortlistView({ all }: { all: CardProperty[] }) {
   const { items } = useShortlist();
-  const list = properties.filter((p) => items.includes(p.id));
+  const list = all.filter((p) => items.includes(p.id));
 
   if (!list.length) {
     return (

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { CheckCircle2, Loader2 } from 'lucide-react';
 import { cities } from '@/lib/data/cities';
 import { navTypes } from '@/lib/site';
+import PhoneField, { validatePhone } from '@/components/PhoneField';
 
 export default function SellForm() {
   const [state, setState] = useState<'idle' | 'loading' | 'done' | 'error'>('idle');
@@ -12,8 +13,10 @@ export default function SellForm() {
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
-    const phone = String(fd.get('phone') || '').replace(/\D/g, '').slice(-10);
-    if (!/^[6-9]\d{9}$/.test(phone)) return setError('Please enter a valid 10-digit mobile number.');
+    const countryCode = String(fd.get('countryCode') || '+91');
+    const check = validatePhone(countryCode, String(fd.get('phone') || ''));
+    if (!check.ok) return setError(check.error);
+    const phone = check.number;
     setError('');
     setState('loading');
     const details = ['purpose', 'role', 'type', 'city', 'locality', 'bhk', 'area', 'price']
@@ -25,6 +28,7 @@ export default function SellForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: fd.get('name'),
+          countryCode,
           phone,
           email: fd.get('email') || '',
           message: `${details}\n${fd.get('message') || ''}`,
@@ -72,11 +76,11 @@ export default function SellForm() {
       <Field label="Area"><input name="area" className="input" placeholder="e.g. 1,250 sq.ft" /></Field>
       <Field label="Expected price / rent"><input name="price" className="input" placeholder="e.g. ₹1.2 Cr or ₹45K / month" /></Field>
       <Field label="Your name *"><input name="name" required className="input" autoComplete="name" /></Field>
-      <Field label="Mobile number *"><input name="phone" required inputMode="numeric" maxLength={10} className="input" autoComplete="tel-national" /></Field>
+      <Field label="Mobile number *"><PhoneField /></Field>
       <div className="sm:col-span-2"><Field label="Email"><input name="email" type="email" className="input" autoComplete="email" /></Field></div>
       <div className="sm:col-span-2"><Field label="Additional details"><textarea name="message" rows={3} className="input" placeholder="Floor, furnishing, amenities, availability…" /></Field></div>
       {error && <p className="text-xs font-semibold text-red-500 sm:col-span-2">{error}</p>}
-      <button disabled={state === 'loading'} className="btn-gold sm:col-span-2 !py-4">
+      <button disabled={state === 'loading'} className="btn-gold shine sm:col-span-2 !py-4">
         {state === 'loading' && <Loader2 className="h-4 w-4 animate-spin" />} Submit Property
       </button>
     </form>

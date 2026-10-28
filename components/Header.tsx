@@ -3,85 +3,17 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import {
   ArrowRight, Building2, ChevronDown, Heart, Home, KeyRound, Mail, Menu, MessageCircle, Phone, Plus, Tag, X,
 } from 'lucide-react';
 import Logo from './Logo';
-import { navTypes, statuses, budgetBuy, site } from '@/lib/site';
-import { cities } from '@/lib/data/cities';
-import { developers } from '@/lib/data/developers';
-import { allLocalities, properties } from '@/lib/data/properties';
+import { site } from '@/lib/site';
+import type { NavItem } from '@/lib/nav';
 import { useShortlist } from './useShortlist';
 import { openLead } from './LeadModal';
 
-type LinkT = { href: string; label: string; meta?: string };
-type Col = { title: string; links: LinkT[] };
-type NavItem = { label: string; href: string; cols?: Col[]; footer?: LinkT; small?: boolean };
-
-const locs = allLocalities();
-const count = (f: (p: (typeof properties)[number]) => boolean) => properties.filter(f).length;
-
-const nav: NavItem[] = [
-  {
-    label: 'Buy',
-    href: '/buy',
-    cols: [
-      { title: 'Property type', links: navTypes.map((t) => ({ href: `/properties?for=buy&type=${t.slug}`, label: t.label, meta: String(count((p) => p.type === t.slug && p.listingFor === 'buy')) })) },
-      { title: 'Budget', links: budgetBuy.map((b) => ({ href: `/properties?for=buy&budget=${b.value}`, label: b.label })) },
-      { title: 'Project status', links: statuses.map((s) => ({ href: `/status/${s.slug}`, label: s.label, meta: String(count((p) => p.status === s.slug)) })) },
-      { title: 'Top cities', links: cities.map((c) => ({ href: `/properties?for=buy&city=${c.slug}`, label: c.name })) },
-    ],
-    footer: { href: '/buy', label: 'View all properties for sale' },
-  },
-  {
-    label: 'Rent',
-    href: '/rent',
-    cols: [
-      {
-        title: 'For rent',
-        links: [
-          { href: '/properties?for=rent&type=residential', label: 'Homes for rent' },
-          { href: '/properties?for=rent&type=villa', label: 'Villas for rent' },
-          { href: '/properties?for=rent&type=commercial', label: 'Offices for lease' },
-        ],
-      },
-      { title: 'Rent by city', links: cities.map((c) => ({ href: `/properties?for=rent&city=${c.slug}`, label: `Rent in ${c.name}` })) },
-    ],
-    footer: { href: '/rent', label: 'View all rentals' },
-  },
-  { label: 'Sell', href: '/sell' },
-  {
-    label: 'Developers',
-    href: '/developers',
-    cols: [{ title: 'Featured developers', links: developers.map((d) => ({ href: `/developers/${d.slug}`, label: d.name, meta: String(count((p) => p.developer === d.slug)) })) }],
-    footer: { href: '/developers', label: `All ${developers.length} developers` },
-  },
-  {
-    label: 'Localities',
-    href: '/localities',
-    cols: cities.map((c) => ({ title: c.name, links: locs.filter((l) => l.city === c.slug).map((l) => ({ href: `/city/${c.slug}/${l.slug}`, label: l.name })) })),
-    footer: { href: '/localities', label: `All ${locs.length} localities` },
-  },
-  {
-    label: 'Resources',
-    href: '/blog',
-    small: true,
-    cols: [
-      {
-        title: 'Resources',
-        links: [
-          { href: '/blog', label: 'Blog & guides' },
-          { href: '/home-loan#emi-calculator', label: 'EMI calculator' },
-          { href: '/home-loan', label: 'Home loan guide' },
-          { href: '/about', label: 'About RealtechX' },
-          { href: '/contact', label: 'Contact us' },
-        ],
-      },
-    ],
-  },
-];
-
-export default function Header() {
+export default function Header({ nav }: { nav: NavItem[] }) {
   const [scrolled, setScrolled] = useState(false);
   const [drawer, setDrawer] = useState<'closed' | 'open' | 'closing'>('closed');
   const [openSection, setOpenSection] = useState<string | null>(null);
@@ -230,8 +162,8 @@ export default function Header() {
       </div>
 
       {/* ───── Mobile drawer (rendered only while open — nothing off-screen) ───── */}
-      {drawer !== 'closed' && (
-        <div className="fixed inset-0 z-[55] lg:hidden" role="dialog" aria-modal="true" aria-label="Menu">
+      {drawer !== 'closed' && createPortal(
+        <div className="fixed inset-0 z-[70] lg:hidden" role="dialog" aria-modal="true" aria-label="Menu">
           <div className={`absolute inset-0 bg-ink/60 backdrop-blur-[2px] ${drawer === 'open' ? 'animate-fadeIn' : 'animate-fadeOut'}`} onClick={closeDrawer} />
           <aside className={`absolute inset-y-0 right-0 flex w-[88%] max-w-[400px] flex-col overflow-hidden bg-white shadow-2xl ${drawer === 'open' ? 'animate-slideInRight' : 'animate-slideOutRight'}`}>
             <div className="flex h-16 shrink-0 items-center justify-between border-b border-ink/[0.06] px-5">
@@ -309,7 +241,8 @@ export default function Header() {
               </Link>
             </div>
           </aside>
-        </div>
+        </div>,
+        document.body,
       )}
     </header>
   );

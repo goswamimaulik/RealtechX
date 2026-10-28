@@ -14,7 +14,9 @@ import Reviews from '@/components/Reviews';
 import BlogCard from '@/components/BlogCard';
 import { LeadButton } from '@/components/LeadButtons';
 import { SectionHeading } from '@/components/ui';
-import { properties, allLocalities } from '@/lib/data/properties';
+import { properties, allLocalities, toCard } from '@/lib/data/properties';
+import { buildCityExplorer, buildSearchIndex } from '@/lib/nav';
+import { statuses } from '@/lib/site';
 import { getCity } from '@/lib/data/cities';
 import { developers } from '@/lib/data/developers';
 import { blogs } from '@/lib/data/blogs';
@@ -52,15 +54,15 @@ export default function HomePage() {
           <div className="max-w-[760px]">
             <p className="eyebrow animate-fadeUp !text-gold-light">India’s premium property portal</p>
             <h1 className="mt-4 animate-fadeUp text-balance font-display text-[34px] font-semibold leading-[1.08] text-white sm:text-[46px] lg:text-[62px]">
-              Find a home that matches your <span className="gold-text">ambition</span>
+              Find a home that matches your <span className="gold-text italic">ambition</span>
             </h1>
             <p className="mt-4 max-w-[560px] animate-fadeUp text-[15px] leading-relaxed text-white/75 lg:text-[17px]">
-              Apartments, villas, offices, plots and land across six of India’s fastest-growing cities — with complete details and real advisors.
+              Apartments, villas, offices, plots and land across 10 of India’s fastest-growing cities — with complete details and real advisors.
             </p>
           </div>
 
           <div className="relative z-20 mt-7 max-w-[1080px] animate-fadeUp lg:mt-10">
-            <HeroSearch />
+            <HeroSearch index={buildSearchIndex()} />
           </div>
 
           <div className="mt-5 flex items-center gap-3 lg:mt-6">
@@ -96,7 +98,7 @@ export default function HomePage() {
       {/* ───────── PROPERTY TYPES ───────── */}
       <section className="section">
         <div className="container">
-          <SectionHeading eyebrow="Explore by category" title={<>Every kind of property, <span className="text-gold-dark">one address</span></>} text="From sea-facing sky residences to farmland in the Sahyadris — start with what you are looking for." />
+          <SectionHeading eyebrow="Explore by category" title={<>Every kind of property, <span className="italic text-gold-dark">one address</span></>} text="From sea-facing sky residences to farmland in the Sahyadris — start with what you are looking for." />
           <Carousel label="Property categories" itemClassName={PEEK_SMALL}>
             {navTypes.map((t) => {
               const meta = typeMeta[t.slug];
@@ -124,7 +126,7 @@ export default function HomePage() {
         <div className="container">
           <SectionHeading eyebrow="Handpicked for you" title="Featured projects" text="Our advisors’ pick of the most promising launches and ready homes this month." action={{ href: '/properties?sort=featured', label: 'View all properties' }} />
           <Carousel label="Featured projects">
-            {featured.map((p) => <PropertyCard key={p.id} p={p} />)}
+            {featured.map((p) => <PropertyCard key={p.id} p={toCard(p)} />)}
           </Carousel>
         </div>
       </section>
@@ -133,7 +135,7 @@ export default function HomePage() {
       <section className="section">
         <div className="container">
           <SectionHeading eyebrow="Explore by location" title="Projects by city & locality" text="Pick a city to see its localities, project counts, starting prices and top projects." action={{ href: '/localities', label: 'All localities' }} />
-          <CityExplorer />
+          <CityExplorer data={buildCityExplorer()} />
         </div>
       </section>
 
@@ -141,7 +143,7 @@ export default function HomePage() {
       <section className="section bg-white">
         <div className="container">
           <SectionHeading eyebrow="By project stage" title="New launches to ready-to-move homes" center />
-          <StatusTabs items={properties} />
+          <StatusTabs items={statuses.flatMap((s) => properties.filter((p) => p.status === s.slug && p.listingFor === 'buy').sort((a, b) => Number(b.source === 'published') - Number(a.source === 'published')).slice(0, 8).map(toCard))} counts={Object.fromEntries(statuses.map((s) => [s.slug, properties.filter((p) => p.status === s.slug).length]))} />
         </div>
       </section>
 
@@ -153,7 +155,7 @@ export default function HomePage() {
         <div className="container">
           <SectionHeading eyebrow="Fresh on RealtechX" title="Newly added properties" action={{ href: '/properties', label: 'See all listings' }} />
           <Carousel label="Newly added">
-            {latest.map((p) => <PropertyCard key={p.id} p={p} />)}
+            {latest.map((p) => <PropertyCard key={p.id} p={toCard(p)} />)}
           </Carousel>
         </div>
       </section>
@@ -232,7 +234,7 @@ export default function HomePage() {
             <div className="grid gap-9 p-7 sm:p-10 md:p-14 lg:grid-cols-[1.25fr_1fr] lg:items-center">
               <div>
                 <p className="eyebrow !text-gold-light">For owners, builders & channel partners</p>
-                <h2 className="mt-3 font-display text-[30px] font-semibold leading-[1.1] md:text-[46px]">Sell or rent out your property <span className="gold-text">faster</span></h2>
+                <h2 className="mt-3 font-display text-[30px] font-semibold leading-[1.1] md:text-[46px]">Sell or rent out your property <span className="gold-text italic">faster</span></h2>
                 <p className="mt-4 max-w-lg text-[15px] leading-relaxed text-ivory/70">List on RealtechX and reach serious buyers and tenants searching every day — with a premium listing page your property deserves.</p>
                 <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                   <Link href="/sell" className="btn-gold">Post property free <ArrowRight className="h-4 w-4" /></Link>
@@ -243,7 +245,7 @@ export default function HomePage() {
                 {[
                   { n: '₹0', t: 'Listing fee' },
                   { n: '24h', t: 'Listing goes live' },
-                  { n: '6', t: 'Cities covered' },
+                  { n: '10', t: 'Cities covered' },
                   { n: '1:1', t: 'Dedicated manager' },
                 ].map((s) => (
                   <div key={s.t} className="rounded-2xl border border-white/10 bg-white/[0.06] p-4 backdrop-blur md:p-6">

@@ -3,37 +3,10 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
-import { allLocalities, properties } from '@/lib/data/properties';
-import { cities, getCity } from '@/lib/data/cities';
-import { developers } from '@/lib/data/developers';
-import { navTypes, budgetBuy } from '@/lib/site';
-
-type Group = { title: string; links: { href: string; label: string }[] };
-
-const groups: Group[] = [
-  {
-    title: 'Localities',
-    links: allLocalities().map((l) => ({ href: `/city/${l.city}/${l.slug}`, label: `Property in ${l.name}, ${getCity(l.city)?.name}` })),
-  },
-  { title: 'Developers', links: developers.map((d) => ({ href: `/developers/${d.slug}`, label: `${d.name} projects` })) },
-  {
-    title: 'Budget',
-    links: cities.flatMap((c) => budgetBuy.slice(1, 3).map((b) => ({ href: `/properties?city=${c.slug}&budget=${b.value}`, label: `Property ${b.label} in ${c.name}` }))),
-  },
-  {
-    title: 'Configuration',
-    links: cities.flatMap((c) => [2, 3, 4].map((b) => ({ href: `/properties?city=${c.slug}&bhk=${b}`, label: `${b} BHK in ${c.name}` }))),
-  },
-  {
-    title: 'Property type',
-    links: cities.flatMap((c) =>
-      navTypes.filter((t) => properties.some((p) => p.city === c.slug && p.type === t.slug)).map((t) => ({ href: `/properties?city=${c.slug}&type=${t.slug}`, label: `${t.label} in ${c.name}` })),
-    ),
-  },
-];
+import type { SearchGroup } from '@/lib/nav';
 
 /** "Popular searches" link hub (tab-wise) shown above the footer on every page. */
-export default function PopularSearches() {
+export default function PopularSearches({ groups }: { groups: SearchGroup[] }) {
   const [tab, setTab] = useState(groups[0].title);
   const [more, setMore] = useState(false);
   const current = groups.find((g) => g.title === tab)!;

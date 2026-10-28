@@ -1,12 +1,17 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { ArrowLeft, ArrowRight, Clock, PenLine } from 'lucide-react';
 import Image from '@/components/SmartImage';
 import { Breadcrumbs } from '@/components/ui';
-import LeadForm from '@/components/LeadForm';
 import PropertyCard from '@/components/PropertyCard';
+import BlogCard from '@/components/BlogCard';
+import Carousel from '@/components/Carousel';
+import ShareButtons from '@/components/ShareButtons';
+import { LeadButton } from '@/components/LeadButtons';
 import { blogs, getBlog } from '@/lib/data/blogs';
-import { properties } from '@/lib/data/properties';
+import { properties, toCard } from '@/lib/data/properties';
+import { getCity } from '@/lib/data/cities';
 import { formatDate, slugify } from '@/lib/format';
 import { site } from '@/lib/site';
 
@@ -30,8 +35,11 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   const { slug } = await params;
   const b = getBlog(slug);
   if (!b) notFound();
-  const more = blogs.filter((x) => x.slug !== b.slug).slice(0, 3);
-  const featured = properties.filter((p) => p.featured).slice(0, 2);
+  const city = b.city ? getCity(b.city) : undefined;
+  const projects = (city ? properties.filter((p) => p.city === city.slug) : properties.filter((p) => p.featured))
+    .sort((a, c) => Number(c.source === 'published') - Number(a.source === 'published'))
+    .slice(0, 8);
+  const related = blogs.filter((x) => x.slug !== b.slug).sort((x, y) => Number(y.category === b.category) - Number(x.category === b.category)).slice(0, 3);
   const ld = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
@@ -39,67 +47,107 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     description: b.excerpt,
     image: b.cover,
     datePublished: b.date,
-    author: { '@type': 'Organization', name: site.name },
+    author: { '@type': 'Organization', name: `${site.name} Team` },
     publisher: { '@type': 'Organization', name: site.name },
   };
 
   return (
     <article>
-      <header className="container max-w-4xl pt-10">
-        <Breadcrumbs items={[{ href: '/', label: 'Home' }, { href: '/blog', label: 'Blog' }, { label: b.title }]} />
-        <p className="mt-8 text-[11px] font-bold uppercase tracking-[0.25em] text-gold-dark">{b.category}</p>
-        <h1 className="mt-3 text-balance font-display text-4xl font-semibold leading-[1.08] md:text-6xl">{b.title}</h1>
-        <p className="mt-4 text-lg text-ink/65">{b.excerpt}</p>
-        <p className="mt-4 text-xs font-semibold text-muted">{formatDate(b.date)} · {b.readTime} · By RealtechX Research</p>
+      {/* Header */}
+      <header className="border-b border-ink/[0.06] bg-white">
+        <div className="container max-w-3xl pb-8 pt-8 md:pb-10 md:pt-12">
+          <Breadcrumbs items={[{ href: '/', label: 'Home' }, { href: '/blog', label: 'Blog' }, { label: b.title }]} />
+          <p className="mt-6 inline-flex rounded-full bg-gold-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-gold-dark">{b.category}</p>
+          <h1 className="mt-4 text-balance font-display text-[32px] font-semibold leading-[1.1] md:text-[50px]">{b.title}</h1>
+          <p className="mt-4 text-[16px] leading-relaxed text-ink/65 md:text-[17px]">{b.excerpt}</p>
+          <div className="mt-6 flex flex-col gap-4 border-t border-ink/[0.06] pt-5 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3">
+              <span className="grid h-10 w-10 place-items-center rounded-full bg-ink"><PenLine className="h-4 w-4 text-gold-light" /></span>
+              <div className="text-[13px]">
+                <p className="font-semibold">{site.name} Team</p>
+                <p className="flex items-center gap-1.5 text-muted">{formatDate(b.date)} · <Clock className="h-3 w-3" /> {b.readTime}</p>
+              </div>
+            </div>
+            <ShareButtons title={b.title} />
+          </div>
+        </div>
       </header>
-      <div className="container mt-8 max-w-5xl">
-        <div className="relative aspect-[16/8] overflow-hidden rounded-3xl">
-          <Image src={b.cover} alt={b.title} fill priority sizes="100vw" className="object-cover" />
+
+      {/* Cover */}
+      <div className="container max-w-5xl pt-8 md:pt-10">
+        <div className="relative aspect-[16/9] overflow-hidden rounded-[24px] md:rounded-[28px]">
+          <Image src={b.cover} alt={b.title} fill priority sizes="(max-width:1024px) 100vw, 1024px" className="object-cover" />
         </div>
       </div>
 
-      <div className="container grid max-w-6xl gap-12 py-12 lg:grid-cols-[220px_1fr_300px]">
-        <aside className="hidden lg:block">
-          <div className="sticky top-24">
-            <p className="label">On this page</p>
-            <ul className="space-y-2 text-sm">
-              {b.sections.map((s) => <li key={s.heading}><a href={`#${slugify(s.heading)}`} className="text-ink/70 hover:text-gold-dark">{s.heading}</a></li>)}
-            </ul>
-          </div>
-        </aside>
-        <div className="min-w-0">
-          <div className="prose-luxe text-[16.5px]">
-            {b.sections.map((s) => (
-              <section key={s.heading} id={slugify(s.heading)} className="scroll-mt-28">
-                <h2>{s.heading}</h2>
-                {s.body.map((p, i) => <p key={i}>{p}</p>)}
-              </section>
-            ))}
-          </div>
-          <div className="mt-12 rounded-2xl bg-ink-grad p-8 text-ivory">
-            <h3 className="font-display text-3xl font-semibold">Need help applying this to your search?</h3>
-            <span className="mb-6 mt-2 block text-sm text-ivory/60">Talk to a RealtechX advisor — free, no obligation.</span>
-            <LeadForm source={`Blog: ${b.title}`} cta="Talk to an Advisor" dark showEmail={false} />
-          </div>
+      {/* Body */}
+      <div className="container max-w-3xl py-10 md:py-14">
+        {b.sections.length > 2 && (
+          <nav className="mb-8 rounded-2xl border border-ink/[0.07] bg-white p-5" aria-label="In this article">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-gold-dark">In this article</p>
+            <ol className="mt-3 space-y-1.5 text-[14.5px]">
+              {b.sections.map((s, i) => (
+                <li key={s.heading}>
+                  <a href={`#${slugify(s.heading)}`} className="flex gap-2 text-ink/75 hover:text-gold-dark"><span className="text-muted">{i + 1}.</span>{s.heading}</a>
+                </li>
+              ))}
+            </ol>
+          </nav>
+        )}
+        <div className="prose-luxe text-[16.5px] [&_p]:text-[16.5px] [&_p]:leading-[1.85]">
+          {b.sections.map((s) => (
+            <section key={s.heading} id={slugify(s.heading)} className="scroll-mt-28">
+              <h2>{s.heading}</h2>
+              {s.body.map((p, i) => <p key={i}>{p}</p>)}
+            </section>
+          ))}
         </div>
-        <aside className="space-y-6">
-          <p className="label">Featured properties</p>
-          {featured.map((p) => <PropertyCard key={p.id} p={p} />)}
-        </aside>
+
+        <div className="mt-10 flex flex-wrap gap-3 border-t border-ink/[0.06] pt-6">
+          <Link href="/blog" className="btn-outline !py-2.5 text-[13.5px]"><ArrowLeft className="h-4 w-4" /> Back to blog</Link>
+          <Link href={city ? `/city/${city.slug}` : '/properties'} className="btn-ink !py-2.5 text-[13.5px]">
+            Browse properties{city ? ` in ${city.name}` : ''} <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+
+        <div className="relative mt-10 overflow-hidden rounded-[24px] bg-ink p-6 text-ivory md:flex md:items-center md:justify-between md:gap-6 md:p-8">
+          <div className="pointer-events-none absolute -right-12 -top-12 h-44 w-44 rounded-full bg-gold/20 blur-3xl" />
+          <div className="relative">
+            <p className="font-display text-[24px] font-semibold leading-tight md:text-[28px]">Need help applying this to your search?</p>
+            <p className="mt-1.5 text-[14px] text-ivory/65">Talk to a RealtechX advisor — free and no obligation.</p>
+          </div>
+          <LeadButton className="btn-gold relative mt-5 w-full shrink-0 md:mt-0 md:w-auto" intent="Talk to an Advisor" source={`Blog: ${b.title}`}>Talk to an advisor <ArrowRight className="h-4 w-4" /></LeadButton>
+        </div>
       </div>
 
-      <section className="bg-ivory-200/60 py-14">
+      {/* Projects */}
+      <section className="border-t border-ink/[0.06] bg-white py-12 md:py-16">
         <div className="container">
-          <h2 className="mb-8 font-display text-3xl font-semibold">Keep reading</h2>
-          <div className="grid gap-6 md:grid-cols-3">
-            {more.map((m) => (
-              <Link key={m.slug} href={`/blog/${m.slug}`} className="card group p-6">
-                <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-gold-dark">{m.category}</p>
-                <p className="mt-2 font-display text-2xl font-semibold group-hover:text-gold-dark">{m.title}</p>
-                <p className="mt-2 text-sm text-muted">{m.excerpt}</p>
-              </Link>
-            ))}
+          <div className="mb-7 flex items-end justify-between gap-4 md:mb-10">
+            <div>
+              <p className="eyebrow">Explore projects</p>
+              <h2 className="h-section mt-2">{city ? `Projects in ${city.name}` : 'Handpicked projects'}</h2>
+            </div>
+            <Link href={city ? `/city/${city.slug}` : '/properties?sort=featured'} className="shrink-0 pb-1 text-[13.5px] font-semibold text-gold-dark hover:underline">
+              See all <ArrowRight className="inline h-4 w-4" />
+            </Link>
           </div>
+          <Carousel label="Projects">
+            {projects.map((p) => <PropertyCard key={p.id} p={toCard(p)} />)}
+          </Carousel>
+        </div>
+      </section>
+
+      {/* Related reads */}
+      <section className="py-12 md:py-16">
+        <div className="container">
+          <div className="mb-7 flex items-end justify-between gap-4 md:mb-10">
+            <h2 className="h-section">Related reads</h2>
+            <Link href="/blog" className="shrink-0 pb-1 text-[13.5px] font-semibold text-gold-dark hover:underline">All articles <ArrowRight className="inline h-4 w-4" /></Link>
+          </div>
+          <Carousel label="Related reads">
+            {related.map((r) => <BlogCard key={r.slug} b={r} />)}
+          </Carousel>
         </div>
       </section>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />

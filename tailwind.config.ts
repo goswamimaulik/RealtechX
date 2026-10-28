@@ -12,7 +12,7 @@ const config: Config = {
         muted: '#6B7280',
       },
       fontFamily: {
-        display: ['var(--font-outfit)', 'Outfit', 'Inter', 'system-ui', 'sans-serif'],
+        display: ['var(--font-cormorant)', '"Cormorant Garamond"', 'Georgia', 'serif'],
         sans: ['var(--font-inter)', 'Inter', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
       },
       boxShadow: {

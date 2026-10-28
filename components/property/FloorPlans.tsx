@@ -56,7 +56,7 @@ export default function FloorPlans({ configs, property, noun = '' }: { configs: 
               <button
                 type="button"
                 onClick={() => openLead({ property, intent: `Unlock ${c.label} Floor Plan`, source: 'Floor Plan' })}
-                className="btn-ink relative !px-4 !py-2.5 text-[13px]"
+                className="btn-ink shine relative !px-4 !py-2.5 text-[13px]"
               >
                 <Lock className="h-3.5 w-3.5" /> Unlock floor plan
               </button>

@@ -44,6 +44,34 @@ export const cities: City[] = [
     image: img.city.surat,
     blurb: 'Vesu and the Tapi riverfront — one of the fastest-growing cities in India for premium homes.',
   },
+  {
+    slug: 'navi-mumbai',
+    name: 'Navi Mumbai',
+    state: 'Maharashtra',
+    image: img.apartment[8],
+    blurb: 'Planned nodes like Vashi, Kharghar and Ulwe — set to transform with the new Navi Mumbai International Airport.',
+  },
+  {
+    slug: 'gurugram',
+    name: 'Gurugram',
+    state: 'Haryana',
+    image: img.commercial[1],
+    blurb: 'Golf Course Road trophy homes, Dwarka Expressway launches and the Cyber City business district.',
+  },
+  {
+    slug: 'noida',
+    name: 'Noida',
+    state: 'Uttar Pradesh',
+    image: img.apartment[3],
+    blurb: 'Expressway-facing sectors, green low-density towers and the Jewar airport growth corridor.',
+  },
+  {
+    slug: 'kolkata',
+    name: 'Kolkata',
+    state: 'West Bengal',
+    image: img.apartment[5],
+    blurb: 'Heritage addresses in Alipore and Ballygunge alongside new-age towers in New Town and on EM Bypass.',
+  },
 ];
 
 export const getCity = (slug: string) => cities.find((c) => c.slug === slug);

@@ -16,10 +16,11 @@ import Amenities from '@/components/property/Amenities';
 import MobileStickyBar from '@/components/property/MobileStickyBar';
 import { AutoLeadPopup, LeadButton } from '@/components/LeadButtons';
 import { Breadcrumbs, Faq } from '@/components/ui';
-import { getProperty, properties, localitiesOf } from '@/lib/data/properties';
+import { getProperty, properties, localitiesOf, toCard } from '@/lib/data/properties';
 import { getCity } from '@/lib/data/cities';
 import { getDeveloper } from '@/lib/data/developers';
-import { areaRange, configLabel, formatDate, priceRange, startPrice, titleCase } from '@/lib/format';
+import { areaRange, configLabel, contactOf, formatDate, priceRange, startPrice, titleCase } from '@/lib/format';
+import SectionNav from '@/components/property/SectionNav';
 import { site, reraPortals } from '@/lib/site';
 
 export function generateStaticParams() {
@@ -63,7 +64,9 @@ export default async function PropertyPage({ params }: { params: Promise<{ slug:
     .slice(0, 8)
     .map((s) => s.x);
   const nearbyLocalities = localitiesOf(p.city).filter((l) => l.slug !== p.localitySlug);
-  const wa = `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(`Hi, I am interested in ${p.title} (${p.id}), ${p.locality}.`)}`;
+  const contact = contactOf(p, site);
+  const phoneDisplay = contact.tel === site.phoneRaw ? site.phone : contact.tel.replace(/^\+91(\d{5})(\d{5})$/, '+91 $1 $2');
+  const wa = `https://wa.me/${contact.wa}?text=${encodeURIComponent(`Hi, I am interested in ${p.title} (${p.id}), ${p.locality}.`)}`;
 
   const keyFacts = [
     { k: 'Configuration', v: configLabel(p) },
@@ -79,11 +82,11 @@ export default async function PropertyPage({ params }: { params: Promise<{ slug:
   ];
 
   const faqs = [
-    { q: `What is the price of ${p.title}?`, a: `${p.title} in ${p.locality}, ${city.name} is priced at ${priceRange(p)} depending on configuration, floor and view.` },
-    { q: `Which configurations are available in ${p.title}?`, a: `${p.title} offers ${p.configurations.map((c) => `${c.label} (${c.area})`).join(', ')}.` },
-    { q: `Who is the developer of ${p.title}?`, a: `${p.title} is developed by ${dev.name}, established in ${dev.established}.` },
+    { q: `What is the price of ${p.title}?`, a: p.priceMin ? `${p.title} in ${p.locality}, ${city.name} is priced at ${priceRange(p)}${p.source === 'published' ? ' as published' : ''}, depending on configuration, floor and view.` : `The price of ${p.title} is available on request — share your details and we will send the latest price sheet.` },
+    { q: `Which configurations are available in ${p.title}?`, a: `${p.title} offers ${p.configurations.map((c) => (c.area === 'On request' ? c.label : `${c.label} (${c.area})`)).join(', ')}.` },
+    { q: `Who is the developer of ${p.title}?`, a: `${p.title} is developed by ${dev.name}${dev.established ? `, established in ${dev.established}` : ''}.` },
     { q: `What is the possession date of ${p.title}?`, a: `The possession timeline for ${p.title} is ${p.possession}.` },
-    { q: `Is ${p.title} RERA registered?`, a: `This is a preview listing and its RERA registration has not been verified yet. Always check the project on ${portal?.name ?? 'the state RERA'} portal before booking.` },
+    { q: `Is ${p.title} RERA registered?`, a: /^Verify|Awaiting/.test(p.rera) ? `RealtechX has not verified the RERA registration of ${p.title} yet. Always check the project on the ${portal?.name ?? 'state RERA'} portal before booking.` : `The published RERA registration number for ${p.title} is ${p.rera}. Please verify it on the ${portal?.name ?? 'state RERA'} portal before booking.` },
   ];
 
   const ld = {
@@ -119,6 +122,11 @@ export default async function PropertyPage({ params }: { params: Promise<{ slug:
               <span className={`rounded-full px-2.5 py-1 text-[10.5px] font-semibold uppercase tracking-wider ${statusTone[p.status]}`}>{titleCase(p.status)}</span>
               <span className="rounded-full bg-gold-50 px-2.5 py-1 text-[10.5px] font-semibold uppercase tracking-wider text-gold-dark">{titleCase(p.type)} · For {isRent ? 'rent' : 'sale'}</span>
               {p.featured && <span className="rounded-full border border-gold/50 px-2.5 py-1 text-[10.5px] font-semibold uppercase tracking-wider text-gold-dark">Featured</span>}
+              {p.source === 'published' ? (
+                <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-[10.5px] font-semibold uppercase tracking-wider text-emerald-700">Details as published</span>
+              ) : (
+                <span className="rounded-full bg-ivory-200 px-2.5 py-1 text-[10.5px] font-semibold uppercase tracking-wider text-muted">Sample listing</span>
+              )}
             </div>
             <div className="mt-3 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
               <div className="min-w-0">
@@ -161,11 +169,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ slug:
           </div>
 
           {/* ───────── Section nav ───────── */}
-          <nav className="no-scrollbar sticky top-16 z-20 -mx-4 mt-7 flex gap-1 overflow-x-auto border-y border-ink/[0.06] bg-ivory/95 px-4 py-2 backdrop-blur md:-mx-6 md:px-6 lg:top-[74px] lg:mx-0 lg:mt-9 lg:rounded-full lg:border lg:bg-white/95 lg:px-2 lg:shadow-card" aria-label="Sections">
-            {tabs.map((t) => (
-              <a key={t} href={`#${anchor(t)}`} className="shrink-0 rounded-full px-3.5 py-2 text-[13.5px] font-medium text-ink/70 transition hover:bg-ink hover:text-ivory">{t}</a>
-            ))}
-          </nav>
+          <SectionNav items={tabs.map((t) => ({ id: anchor(t), label: t }))} />
 
           {/* ───────── Overview + key facts ───────── */}
           <Section id="overview" eyebrow="Overview" title={`About ${p.title}`}>
@@ -212,7 +216,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ slug:
 
           {/* ───────── Amenities ───────── */}
           <Section id="amenities" eyebrow="Lifestyle" title="Amenities">
-            <Amenities items={p.amenities} />
+            <Amenities items={p.amenities} property={p.title} />
           </Section>
 
           {/* ───────── Location ───────── */}
@@ -227,7 +231,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ slug:
                 {dev.name.split(' ').slice(0, 2).map((w) => w[0]).join('')}
               </span>
               <div className="min-w-0 flex-1">
-                <p className="text-[12.5px] font-medium text-muted">Since {dev.established} · {devCount} {devCount === 1 ? 'project' : 'projects'} · {getCity(dev.city)?.name}</p>
+                <p className="text-[12.5px] font-medium text-muted">{dev.established ? `Since ${dev.established} · ` : ''}{devCount} {devCount === 1 ? 'project' : 'projects'} · {getCity(dev.city)?.name}</p>
                 <p className="mt-2 text-[14.5px] leading-relaxed text-ink/75">{dev.about}</p>
               </div>
               <Link href={`/developers/${dev.slug}`} className="btn-outline shrink-0">All projects <ArrowRight className="h-4 w-4" /></Link>
@@ -288,13 +292,13 @@ export default async function PropertyPage({ params }: { params: Promise<{ slug:
               <LeadButton className="btn-gold col-span-2 sm:col-span-1" property={p.title} intent="I'm Interested" source="Bottom CTA" image={p.images[0]}>I’m interested <ArrowRight className="h-4 w-4" /></LeadButton>
               <LeadButton className="btn-ghost-light !px-4" property={p.title} intent="Book Site Visit" source="Bottom CTA Visit"><CalendarCheck className="h-4 w-4" /> Book visit</LeadButton>
               <a href={wa} target="_blank" rel="noopener" className="btn-ghost-light !px-4"><MessageCircle className="h-4 w-4" /> WhatsApp</a>
-              <a href={`tel:${site.phoneRaw}`} className="btn-ghost-light col-span-2 !px-4 sm:col-span-1"><Phone className="h-4 w-4" /> {site.phone}</a>
+              <a href={`tel:${contact.tel}`} className="btn-ghost-light col-span-2 !px-4 sm:col-span-1"><Phone className="h-4 w-4" /> {phoneDisplay}</a>
             </div>
           </div>
 
           <p className="mt-6 flex items-start gap-2 text-[12px] leading-relaxed text-muted">
             <FileText className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-            Preview listing for demonstration. Prices, images and specifications are indicative and may change. Listed on {formatDate(p.postedOn)}.
+            {p.source === 'published' ? 'Details compiled from information published by the developer and property portals; images are representative. Verify the latest price, availability and RERA registration with the developer.' : 'Sample listing for demonstration. Prices, images and specifications are indicative.'} Listed on {formatDate(p.postedOn)}.
           </p>
         </div>
 
@@ -315,7 +319,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ slug:
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <a href={`tel:${site.phoneRaw}`} className="btn-ink"><Phone className="h-4 w-4" /> Call</a>
+              <a href={`tel:${contact.tel}`} className="btn-ink"><Phone className="h-4 w-4" /> Call</a>
               <a href={wa} target="_blank" rel="noopener" className="btn bg-[#25D366] text-white"><MessageCircle className="h-4 w-4" /> WhatsApp</a>
             </div>
           </div>
@@ -333,7 +337,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ slug:
             <Link href={`/properties?city=${p.city}`} className="shrink-0 pb-1 text-[13.5px] font-semibold text-gold-dark hover:underline">View all <ArrowRight className="inline h-4 w-4" /></Link>
           </div>
           <Carousel label="Similar properties">
-            {similar.map((s) => <PropertyCard key={s.id} p={s} />)}
+            {similar.map((s) => <PropertyCard key={s.id} p={toCard(s)} />)}
           </Carousel>
 
           {nearbyLocalities.length > 0 && (
@@ -349,7 +353,7 @@ export default async function PropertyPage({ params }: { params: Promise<{ slug:
         </div>
       </section>
 
-      <MobileStickyBar title={p.title} id={p.id} price={startPrice(p) + (isRent ? '' : ' onwards')} image={p.images[0]} wa={wa} />
+      <MobileStickyBar title={p.title} id={p.id} price={startPrice(p) + (isRent || !p.priceMin ? '' : ' onwards')} image={p.images[0]} wa={wa} tel={contact.tel} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />
     </>
   );

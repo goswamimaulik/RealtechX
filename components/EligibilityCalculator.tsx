@@ -37,7 +37,7 @@ export default function EligibilityCalculator() {
         <button
           type="button"
           onClick={() => openLead({ intent: 'Check Loan Eligibility', source: 'Eligibility Calculator', title: 'Get your exact eligibility', subtitle: `Indicative eligibility ${formatINR(eligible)} — an advisor will confirm with lenders.` })}
-          className="btn-ink mt-6 w-full"
+          className="btn-ink shine mt-6 w-full"
         >
           Get exact eligibility <ArrowRight className="h-4 w-4" />
         </button>

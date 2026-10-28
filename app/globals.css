@@ -16,7 +16,13 @@
   }
   h1, h2, h3, h4 {
     @apply font-display;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.01em;
+  }
+  /* Cormorant has a small x-height — scale it up so it reads as large as the body face,
+     and use lining figures for prices. */
+  .font-display, h1, h2, h3, h4 {
+    font-size-adjust: 0.46;
+    font-variant-numeric: lining-nums proportional-nums;
   }
   ::selection { background: #e7d3a4; color: #0b1020; }
   body.has-sticky-bar { padding-bottom: 74px; }
@@ -57,6 +63,19 @@
     transform: scale(0.97);
   }
 
+  /* Continuous white light sweep — gold buttons and every form / popup submit button (.shine) */
+  .btn-gold::after, .shine::after {
+    background: linear-gradient(110deg, transparent 25%, rgba(255, 255, 255, 0.65) 45%, rgba(255, 255, 255, 0.9) 50%, rgba(255, 255, 255, 0.65) 55%, transparent 75%);
+    animation: rtx-shine 3.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+  .shine { position: relative; isolation: isolate; overflow: hidden; }
+  .shine::after { content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; transform: translateX(-130%); }
+  .btn-ink.shine::after, .btn-outline.shine::after { background: linear-gradient(110deg, transparent 25%, rgba(255, 255, 255, 0.28) 50%, transparent 75%); }
+  .btn-gold:hover::after, .shine:hover::after { animation-duration: 1.4s; }
+  @media (prefers-reduced-motion: reduce) {
+    .btn-gold::after, .shine::after { animation: none; }
+  }
+
   .btn-gold { @apply bg-gold-grad text-ink shadow-gold hover:-translate-y-0.5 hover:shadow-[0_16px_36px_-12px_rgba(201,164,92,0.75)]; }
   .btn-ink { @apply bg-ink text-ivory hover:-translate-y-0.5 hover:bg-ink-700 hover:shadow-[0_14px_30px_-14px_rgba(11,16,32,0.7)]; }
   .btn-outline { @apply border border-ink/15 bg-white text-ink hover:-translate-y-0.5 hover:border-gold hover:text-gold-dark hover:shadow-card; }
@@ -95,9 +114,15 @@
   .snap-item { @apply shrink-0 snap-start; }
 }
 
+@keyframes rtx-shine {
+  0% { transform: translateX(-130%); }
+  55%, 100% { transform: translateX(130%); }
+}
+
 @layer utilities {
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   .text-balance { text-wrap: balance; }
   .gold-text { @apply bg-gold-grad bg-clip-text text-transparent; }
+  .gold-text.italic { padding-right: 0.08em; }
 }

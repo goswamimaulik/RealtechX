@@ -3,11 +3,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Building, Building2, ChevronDown, Home, MapPin, Search, Wallet, X } from 'lucide-react';
-import { cities, getCity } from '@/lib/data/cities';
-import { allLocalities, properties } from '@/lib/data/properties';
-import { developers } from '@/lib/data/developers';
+import { cities } from '@/lib/data/cities';
+import type { SearchIndex } from '@/lib/nav';
 import { budgetBuy, budgetRent, navTypes } from '@/lib/site';
-import { configLabel } from '@/lib/format';
 
 type Tab = { key: string; label: string; params: Record<string, string>; types: string[] };
 const allTypes = navTypes.map((t) => t.slug as string);
@@ -20,23 +18,22 @@ const tabs: Tab[] = [
 ];
 
 type Suggestion = { kind: 'Locality' | 'Project' | 'Developer'; label: string; sub: string; href: string };
-const locs = allLocalities();
 
-function suggest(q: string, city: string): Suggestion[] {
+function suggest(ix: SearchIndex, q: string, city: string): Suggestion[] {
   const s = q.trim().toLowerCase();
   if (!s) return [];
   const has = (t: string) => t.toLowerCase().includes(s);
-  const L: Suggestion[] = locs
-    .filter((l) => (!city || l.city === city) && (has(l.name) || has(getCity(l.city)?.name ?? '')))
-    .map((l) => ({ kind: 'Locality', label: l.name, sub: `${getCity(l.city)?.name} · ${properties.filter((p) => p.city === l.city && p.localitySlug === l.slug).length} projects`, href: `/city/${l.city}/${l.slug}` }));
-  const P: Suggestion[] = properties
+  const L: Suggestion[] = ix.locs
+    .filter((l) => (!city || l.city === city) && (has(l.name) || has(l.cityName)))
+    .map((l) => ({ kind: 'Locality', label: l.name, sub: `${l.cityName} · ${l.count} ${l.count === 1 ? 'project' : 'projects'}`, href: `/city/${l.city}/${l.slug}` }));
+  const P: Suggestion[] = ix.projects
     .filter((p) => (!city || p.city === city) && (has(p.title) || has(p.locality)))
-    .map((p) => ({ kind: 'Project', label: p.title, sub: `${p.locality}, ${getCity(p.city)?.name} · ${configLabel(p)}`, href: `/property/${p.slug}` }));
-  const D: Suggestion[] = developers.filter((d) => has(d.name)).map((d) => ({ kind: 'Developer', label: d.name, sub: `Developer · ${getCity(d.city)?.name}`, href: `/developers/${d.slug}` }));
+    .map((p) => ({ kind: 'Project', label: p.title, sub: `${p.locality}, ${p.cityName} · ${p.config}`, href: `/property/${p.slug}` }));
+  const D: Suggestion[] = ix.devs.filter((d) => has(d.name)).map((d) => ({ kind: 'Developer', label: d.name, sub: `Developer · ${d.cityName}`, href: `/developers/${d.slug}` }));
   return [...L.slice(0, 4), ...P.slice(0, 4), ...D.slice(0, 2)];
 }
 
-export default function HeroSearch() {
+export default function HeroSearch({ index }: { index: SearchIndex }) {
   const router = useRouter();
   const [tab, setTab] = useState<Tab>(tabs[0]);
   const [city, setCity] = useState('');
@@ -50,7 +47,7 @@ export default function HeroSearch() {
 
   const budgets = tab.key === 'rent' ? budgetRent : budgetBuy;
   const typeOptions = navTypes.filter((t) => tab.types.includes(t.slug));
-  const results = useMemo(() => suggest(q, city), [q, city]);
+  const results = useMemo(() => suggest(index, q, city), [index, q, city]);
   const showList = focus && q.trim().length > 0;
 
   useEffect(() => {

@@ -1,14 +1,15 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, Outfit } from 'next/font/google';
+import { Cormorant_Garamond, Inter } from 'next/font/google';
 import './globals.css';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import PopularSearches from '@/components/PopularSearches';
 import LeadModalHost from '@/components/LeadModal';
 import { site } from '@/lib/site';
+import { buildNav, buildPopularSearches } from '@/lib/nav';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
-const outfit = Outfit({ subsets: ['latin'], weight: ['400', '500', '600', '700'], variable: '--font-outfit', display: 'swap' });
+const cormorant = Cormorant_Garamond({ subsets: ['latin'], weight: ['500', '600', '700'], style: ['normal', 'italic'], variable: '--font-cormorant', display: 'swap' });
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
@@ -44,7 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     address: { '@type': 'PostalAddress', addressLocality: 'Surat', addressRegion: 'Gujarat', addressCountry: 'IN' },
   };
   return (
-    <html lang="en-IN" className={`${inter.variable} ${outfit.variable}`}>
+    <html lang="en-IN" className={`${inter.variable} ${cormorant.variable}`}>
       <head>
         <link rel="preconnect" href="https://images.unsplash.com" />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(orgLd) }} />
@@ -57,9 +58,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <span className="hidden text-ivory/80 sm:inline">{site.previewNotice}</span>
           </div>
         </div>
-        <Header />
+        <Header nav={buildNav()} />
         <main className="min-h-[60vh]">{children}</main>
-        <PopularSearches />
+        <PopularSearches groups={buildPopularSearches()} />
         <Footer />
         <LeadModalHost />
       </body>

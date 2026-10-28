@@ -10,7 +10,7 @@ import { img } from '@/lib/data/images';
 
 export const metadata: Metadata = {
   title: 'Real Estate Developers & Builders',
-  description: 'Explore real estate developers and their projects across Mumbai, Pune, Bangalore, Hyderabad, Ahmedabad and Surat.',
+  description: 'Explore real estate developers and their projects across 10 Indian cities including Mumbai, Pune, Bangalore, Hyderabad, Gurugram and Noida.',
   alternates: { canonical: '/developers' },
 };
 
@@ -42,7 +42,7 @@ export default function DevelopersPage() {
                 </p>
                 <p className="mt-1 text-sm text-muted">{d.tagline}</p>
                 <div className="mt-5 grid grid-cols-3 gap-2 border-t border-ink/5 pt-4 text-center text-xs">
-                  <div><p className="font-display text-xl font-semibold">{d.established}</p><p className="text-muted">Established</p></div>
+                  <div><p className="font-display text-xl font-semibold">{d.established || new Set(properties.filter((p) => p.developer === d.slug).map((p) => p.city)).size}</p><p className="text-muted">{d.established ? 'Established' : 'Cities'}</p></div>
                   <div><p className="font-display text-xl font-semibold">{count}</p><p className="text-muted">Projects</p></div>
                   <div><p className="font-display text-xl font-semibold">{getCity(d.city)?.name}</p><p className="text-muted">Base</p></div>
                 </div>

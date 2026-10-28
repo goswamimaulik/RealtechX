@@ -5,7 +5,7 @@ import { PageHero } from '@/components/ui';
 import PropertyCard from '@/components/PropertyCard';
 import LeadForm from '@/components/LeadForm';
 import { developers, getDeveloper } from '@/lib/data/developers';
-import { properties } from '@/lib/data/properties';
+import { properties, toCard } from '@/lib/data/properties';
 import { getCity } from '@/lib/data/cities';
 import { titleCase } from '@/lib/format';
 
@@ -34,10 +34,10 @@ export default async function DeveloperPage({ params }: { params: Promise<{ slug
       <PageHero eyebrow="Developer profile" title={d.name} text={d.tagline} image={d.cover} crumbs={[{ href: '/', label: 'Home' }, { href: '/developers', label: 'Developers' }, { label: d.name }]}>
         <div className="mt-8 grid max-w-2xl grid-cols-2 gap-4 sm:grid-cols-4">
           {[
-            { k: 'Established', v: d.established },
+            { k: d.established ? 'Established' : 'Type', v: d.established || (d.real ? 'Developer' : 'Builder') },
             { k: 'Headquarters', v: city?.name },
             { k: 'Listed projects', v: list.length },
-            { k: 'Experience', v: `${new Date().getFullYear() - d.established}+ yrs` },
+            { k: d.established ? 'Experience' : 'Cities', v: d.established ? `${new Date().getFullYear() - d.established}+ yrs` : String(new Set(list.map((p) => p.city)).size) },
           ].map((s) => (
             <div key={s.k} className="rounded-xl border border-white/15 bg-white/5 p-3 backdrop-blur md:p-4">
               <p className="truncate font-display text-xl font-semibold text-gold-light md:text-2xl">{s.v}</p>
@@ -63,7 +63,7 @@ export default async function DeveloperPage({ params }: { params: Promise<{ slug
 
           <h2 className="mb-5 mt-10 font-display text-[24px] font-semibold md:mb-6 md:mt-12 md:text-3xl">Projects by {d.name} <span className="text-muted">({list.length})</span></h2>
           <div className="grid gap-4 sm:grid-cols-2 md:gap-5">
-            {list.map((p) => <PropertyCard key={p.id} p={p} />)}
+            {list.map((p) => <PropertyCard key={p.id} p={toCard(p)} />)}
           </div>
         </div>
 

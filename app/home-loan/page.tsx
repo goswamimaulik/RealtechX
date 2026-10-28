@@ -41,7 +41,7 @@ export default function HomeLoanPage() {
           <div>
             <Breadcrumbs items={[{ href: '/', label: 'Home' }, { label: 'Home Loan' }]} />
             <p className="eyebrow mt-6 !text-gold-light">EMI & home loan</p>
-            <h1 className="mt-3 text-balance font-display text-[32px] font-semibold leading-[1.1] md:text-[54px]">Plan your home loan with <span className="gold-text">complete clarity</span></h1>
+            <h1 className="mt-3 text-balance font-display text-[32px] font-semibold leading-[1.1] md:text-[54px]">Plan your home loan with <span className="gold-text italic">complete clarity</span></h1>
             <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-ivory/70 md:text-[17px]">Calculate your EMI, see exactly how much interest you’ll pay, check how much you can borrow and get free help comparing offers from leading lenders.</p>
             <div className="mt-7 grid max-w-lg grid-cols-3 gap-3">
               {[

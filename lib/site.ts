@@ -2,7 +2,7 @@ export const site = {
   name: 'RealtechX',
   tagline: 'Premium Real Estate Portal',
   description:
-    'RealtechX is a premium real estate portal to discover residential apartments, commercial spaces, plots, land and luxury villas across Mumbai, Pune, Bangalore, Hyderabad, Ahmedabad and Surat.',
+    'RealtechX is a premium real estate portal to discover residential apartments, commercial spaces, plots, land and luxury villas across Mumbai, Navi Mumbai, Pune, Bangalore, Hyderabad, Gurugram, Noida, Kolkata, Ahmedabad and Surat.',
   url: process.env.NEXT_PUBLIC_SITE_URL || 'https://realtechx.vercel.app',
   phone: '+91 97730 69318',
   phoneRaw: '+919773069318',
@@ -11,8 +11,8 @@ export const site = {
   address: 'Surat, Gujarat, India',
   hours: 'Mon – Sat, 10:00 AM – 7:00 PM',
   previewNotice:
-    'Preview portal — listings are sample projects shown for demonstration; details may change and are not yet verified on RERA.',
-  previewNoticeShort: 'Sample listings for demo · not yet RERA-verified',
+    'Preview portal — real projects with details as their developers publish them, plus sample listings. Not all are verified on RERA yet.',
+  previewNoticeShort: 'Real & sample listings · verify on RERA',
   social: {
     instagram: '#',
     facebook: '#',
@@ -54,4 +54,7 @@ export const reraPortals: Record<string, { name: string; url: string }> = {
   Karnataka: { name: 'K-RERA', url: 'https://rera.karnataka.gov.in' },
   Telangana: { name: 'TS-RERA', url: 'https://rera.telangana.gov.in' },
   Gujarat: { name: 'GujRERA', url: 'https://gujrera.gujarat.gov.in' },
+  Haryana: { name: 'HRERA', url: 'https://haryanarera.gov.in' },
+  'Uttar Pradesh': { name: 'UP RERA', url: 'https://www.up-rera.in' },
+  'West Bengal': { name: 'WBRERA', url: 'https://rera.wb.gov.in' },
 };

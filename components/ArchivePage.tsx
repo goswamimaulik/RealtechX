@@ -4,6 +4,7 @@ import PropertiesExplorer from './PropertiesExplorer';
 import { PageHero } from './ui';
 import { LeadButton } from './LeadButtons';
 import type { Property } from '@/lib/types';
+import { toCards } from '@/lib/data/properties';
 
 type Key = 'q' | 'for' | 'type' | 'city' | 'locality' | 'status' | 'developer' | 'budget' | 'bhk' | 'sort';
 
@@ -51,7 +52,7 @@ export default function ArchivePage({
       )}
 
       <Suspense fallback={<div className="container py-20 text-center text-muted">Loading properties…</div>}>
-        <PropertiesExplorer items={items} hide={hide} />
+        <PropertiesExplorer items={toCards(items)} hide={hide} />
       </Suspense>
 
       {seoText && (

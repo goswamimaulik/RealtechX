@@ -10,7 +10,7 @@ import { img } from '@/lib/data/images';
 
 export const metadata: Metadata = {
   title: 'Localities — Explore Property by Locality',
-  description: 'Browse every locality on RealtechX across Mumbai, Pune, Bangalore, Hyderabad, Ahmedabad and Surat with project counts and starting prices.',
+  description: 'Browse every locality on RealtechX across 10 Indian cities including Mumbai, Pune, Bangalore, Hyderabad, Gurugram and Noida with project counts and starting prices.',
   alternates: { canonical: '/localities' },
 };
 
