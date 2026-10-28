@@ -1,0 +1,147 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+    overflow-x: clip;
+  }
+  body {
+    @apply bg-ivory font-sans text-ink antialiased;
+    overflow-x: clip;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: 'cv11', 'ss01';
+  }
+  h1, h2, h3, h4 {
+    @apply font-display;
+    letter-spacing: -0.01em;
+  }
+  /* Cormorant has a small x-height — scale it up so it reads as large as the body face,
+     and use lining figures for prices. */
+  .font-display, h1, h2, h3, h4 {
+    font-size-adjust: 0.46;
+    font-variant-numeric: lining-nums proportional-nums;
+  }
+  ::selection { background: #e7d3a4; color: #0b1020; }
+  body.has-sticky-bar { padding-bottom: 74px; }
+  @media (min-width: 1024px) { body.has-sticky-bar { padding-bottom: 0; } }
+  img { -webkit-user-drag: none; }
+  button, a { -webkit-tap-highlight-color: transparent; }
+}
+
+@layer components {
+  /* ── Buttons (shared base + variants; no chained @apply so it works in every Tailwind version) ── */
+  .btn, .btn-gold, .btn-ink, .btn-outline, .btn-ghost-light, .btn-white {
+    @apply relative isolate inline-flex items-center justify-center gap-2 overflow-hidden whitespace-nowrap rounded-full px-6 py-3 text-sm font-semibold transition-all duration-300 ease-out disabled:pointer-events-none disabled:opacity-60;
+  }
+  /* shine sweep */
+  .btn::after, .btn-gold::after, .btn-ink::after, .btn-outline::after, .btn-ghost-light::after, .btn-white::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.45) 50%, transparent 70%);
+    transform: translateX(-130%);
+    transition: transform 0.75s cubic-bezier(0.2, 0.7, 0.2, 1);
+    pointer-events: none;
+  }
+  .btn:hover::after, .btn-gold:hover::after, .btn-ink:hover::after, .btn-outline:hover::after, .btn-ghost-light:hover::after, .btn-white:hover::after {
+    transform: translateX(130%);
+  }
+  /* trailing arrow nudge */
+  .btn > svg:last-child:not(:first-child), .btn-gold > svg:last-child:not(:first-child), .btn-ink > svg:last-child:not(:first-child),
+  .btn-outline > svg:last-child:not(:first-child), .btn-ghost-light > svg:last-child:not(:first-child), .btn-white > svg:last-child:not(:first-child) {
+    transition: transform 0.3s ease;
+  }
+  .btn:hover > svg:last-child:not(:first-child), .btn-gold:hover > svg:last-child:not(:first-child), .btn-ink:hover > svg:last-child:not(:first-child),
+  .btn-outline:hover > svg:last-child:not(:first-child), .btn-ghost-light:hover > svg:last-child:not(:first-child), .btn-white:hover > svg:last-child:not(:first-child) {
+    transform: translateX(4px);
+  }
+  .btn:active, .btn-gold:active, .btn-ink:active, .btn-outline:active, .btn-ghost-light:active, .btn-white:active {
+    transform: scale(0.97);
+  }
+
+  /* Continuous white light sweep — gold buttons and every form / popup submit button (.shine) */
+  .btn-gold::after, .shine::after {
+    background: linear-gradient(110deg, transparent 25%, rgba(255, 255, 255, 0.65) 45%, rgba(255, 255, 255, 0.9) 50%, rgba(255, 255, 255, 0.65) 55%, transparent 75%);
+    animation: rtx-shine 3.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+  .shine { position: relative; isolation: isolate; overflow: hidden; }
+  .shine::after { content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; transform: translateX(-130%); }
+  .btn-ink.shine::after, .btn-outline.shine::after { background: linear-gradient(110deg, transparent 25%, rgba(255, 255, 255, 0.28) 50%, transparent 75%); }
+  .btn-gold:hover::after, .shine:hover::after { animation-duration: 1.4s; }
+  @media (prefers-reduced-motion: reduce) {
+    .btn-gold::after, .shine::after { animation: none; }
+  }
+
+  .btn-gold { @apply bg-gold-grad text-ink shadow-gold hover:-translate-y-0.5 hover:shadow-[0_16px_36px_-12px_rgba(201,164,92,0.75)]; }
+  .btn-ink { @apply bg-ink text-ivory hover:-translate-y-0.5 hover:bg-ink-700 hover:shadow-[0_14px_30px_-14px_rgba(11,16,32,0.7)]; }
+  .btn-outline { @apply border border-ink/15 bg-white text-ink hover:-translate-y-0.5 hover:border-gold hover:text-gold-dark hover:shadow-card; }
+  .btn-ghost-light { @apply border border-white/30 text-white hover:-translate-y-0.5 hover:border-white/60 hover:bg-white/10; }
+  .btn-white { @apply bg-white text-ink hover:-translate-y-0.5 hover:shadow-luxe; }
+
+  .eyebrow {
+    @apply inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-gold-dark;
+  }
+  .eyebrow::before { content: ''; @apply h-px w-6 bg-gold; }
+
+  .section { @apply py-14 md:py-24; }
+  .h-section { @apply font-display text-[27px] font-semibold leading-[1.15] md:text-[42px]; }
+
+  .card { @apply rounded-2xl border border-ink/[0.06] bg-white shadow-card; }
+
+  .input {
+    @apply w-full rounded-xl border border-ink/10 bg-white px-4 py-3 text-base text-ink outline-none transition placeholder:text-muted/70 focus:border-gold focus:ring-2 focus:ring-gold/20 md:text-sm;
+  }
+  .label { @apply mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-muted; }
+
+  .chip {
+    @apply inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border border-ink/10 bg-white px-3.5 py-1.5 text-xs font-semibold text-ink/80 transition duration-200 hover:-translate-y-px hover:border-gold hover:text-gold-dark;
+  }
+  .chip-active { @apply border-ink bg-ink text-ivory hover:text-ivory; }
+
+  .prose-luxe p { @apply mb-4 text-[15px] leading-[1.8] text-ink/75; }
+  .prose-luxe h2 { @apply mb-3 mt-10 text-2xl font-semibold md:text-3xl; }
+
+
+  /* ───────────── Admin panel ───────────── */
+  .a-btn {
+    @apply relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl px-4 py-2.5 text-[13px] font-semibold transition duration-200 disabled:pointer-events-none disabled:opacity-50;
+  }
+  .a-btn-gold { @apply bg-gold-grad text-ink shadow-[0_8px_22px_-10px_rgba(201,164,92,0.8)] hover:brightness-105 hover:shadow-[0_12px_28px_-10px_rgba(201,164,92,0.9)]; }
+  .a-btn-ink { @apply bg-ink text-ivory hover:bg-ink-700; }
+  .a-btn-ghost { @apply border border-ink/10 bg-white text-ink hover:border-gold/60 hover:text-gold-dark; }
+  .a-btn-danger { @apply border border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100; }
+  .a-btn-sm { @apply rounded-lg px-3 py-1.5 text-[12px]; }
+  .a-input {
+    @apply w-full rounded-xl border border-ink/10 bg-white px-3.5 py-2.5 text-[16px] text-ink outline-none transition placeholder:text-ink/35 focus:border-gold focus:ring-4 focus:ring-gold/15 disabled:bg-ivory disabled:text-ink/50 md:text-[13.5px];
+  }
+  select.a-input { @apply cursor-pointer appearance-none bg-[length:16px] bg-[right_0.75rem_center] bg-no-repeat pr-9; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); }
+  .a-label { @apply mb-1.5 block text-[11.5px] font-semibold uppercase tracking-[0.08em] text-ink/55; }
+  .a-card { @apply rounded-2xl border border-ink/[0.07] bg-white shadow-[0_1px_2px_rgba(11,16,32,0.04),0_8px_24px_-16px_rgba(11,16,32,0.18)]; }
+  .a-th { @apply whitespace-nowrap px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.08em] text-ink/50; }
+  .a-td { @apply px-4 py-3 align-middle text-[13.5px]; }
+
+  /* Horizontal snap carousel */
+  .snap-row {
+    @apply -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-px-4 px-4 pb-3 pt-1 md:-mx-6 md:gap-5 md:scroll-px-6 md:px-6 lg:mx-0 lg:scroll-px-0 lg:px-0;
+    scrollbar-width: none;
+  }
+  .snap-row::-webkit-scrollbar { display: none; }
+  .snap-item { @apply shrink-0 snap-start; }
+}
+
+@keyframes rtx-shine {
+  0% { transform: translateX(-130%); }
+  55%, 100% { transform: translateX(130%); }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .text-balance { text-wrap: balance; }
+  .gold-text { @apply bg-gold-grad bg-clip-text text-transparent; }
+  .gold-text.italic { padding-right: 0.08em; }
+}

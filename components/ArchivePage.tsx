@@ -3,8 +3,7 @@ import Link from 'next/link';
 import PropertiesExplorer from './PropertiesExplorer';
 import { PageHero } from './ui';
 import { LeadButton } from './LeadButtons';
-import type { Property } from '@/lib/types';
-import { toCards } from '@/lib/data/properties';
+import type { CardProperty } from '@/lib/types';
 
 type Key = 'q' | 'for' | 'type' | 'city' | 'locality' | 'status' | 'developer' | 'budget' | 'bhk' | 'sort';
 
@@ -18,13 +17,15 @@ export default function ArchivePage({
   hide = [],
   related,
   seoText,
+  cityOptions,
 }: {
   eyebrow: string;
   title: string;
   text: string;
   image?: string;
   crumbs: { href?: string; label: string }[];
-  items: Property[];
+  items: CardProperty[];
+  cityOptions?: { slug: string; name: string }[];
   hide?: Key[];
   related?: { title: string; links: { href: string; label: string }[] };
   seoText?: string[];
@@ -52,7 +53,7 @@ export default function ArchivePage({
       )}
 
       <Suspense fallback={<div className="container py-20 text-center text-muted">Loading properties…</div>}>
-        <PropertiesExplorer items={toCards(items)} hide={hide} />
+        <PropertiesExplorer items={items} hide={hide} cityOptions={cityOptions} />
       </Suspense>
 
       {seoText && (
