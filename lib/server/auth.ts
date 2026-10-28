@@ -43,11 +43,35 @@ export async function adminDb() {
 }
 
 /** Creates the first Super Admin from ADMIN_EMAIL / ADMIN_PASSWORD (or the local demo login) when no users exist. */
+const gReset = globalThis as unknown as { __rtxResetDone?: boolean };
+
+/**
+ * Emergency reset: set ADMIN_RESET=true in Vercel and redeploy. The ADMIN_EMAIL account is then
+ * (re)created as an active Super Admin with ADMIN_PASSWORD and any login lock is cleared.
+ * Remove ADMIN_RESET after logging in.
+ */
+async function resetAdmin(db: Db) {
+  if (gReset.__rtxResetDone || !/^(1|true|yes)$/i.test((process.env.ADMIN_RESET || '').trim())) return;
+  gReset.__rtxResetDone = true;
+  const email = (process.env.ADMIN_EMAIL || '').trim().toLowerCase();
+  const password = (process.env.ADMIN_PASSWORD || '').trim();
+  if (!email || !password) return;
+  const users = db.coll('users');
+  const u = await users.findOne({ email });
+  if (!u) {
+    await users.insertOne({ _id: newId(), name: process.env.ADMIN_NAME || 'Super Admin', email, role: 'super_admin', active: true, passwordHash: await hashPassword(password), sessionVersion: 1, createdAt: nowIso() });
+  } else if (!(await verifyPassword(password, u.passwordHash)) || u.role !== 'super_admin' || !u.active) {
+    await users.updateOne({ _id: u._id }, { $set: { passwordHash: await hashPassword(password), role: 'super_admin', active: true }, $inc: { sessionVersion: 1 } });
+  }
+  await db.coll('ratelimits').deleteMany({ _id: { $in: [`login:${email}`] } });
+}
+
 export async function bootstrapAdmin(db: Db) {
+  await resetAdmin(db);
   const users = db.coll('users');
   if ((await users.count({})) > 0) return;
   const email = (process.env.ADMIN_EMAIL || (db.kind === 'memory' ? DEMO_ADMIN.email : '')).trim().toLowerCase();
-  const password = process.env.ADMIN_PASSWORD || (db.kind === 'memory' ? DEMO_ADMIN.password : '');
+  const password = (process.env.ADMIN_PASSWORD || '').trim() || (db.kind === 'memory' ? DEMO_ADMIN.password : '');
   if (!email || !password) return;
   try {
     await users.insertOne({
