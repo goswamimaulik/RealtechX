@@ -273,13 +273,21 @@ export function dbConfigured() {
 export function getDb(): Promise<Db> {
   if (!g.__rtxDb) {
     g.__rtxDb = (async () => {
-      const uri = process.env.MONGODB_URI;
+      // tolerate common copy-paste mistakes: spaces/new lines, quotes, or "MONGODB_URI=" pasted into the value
+      const uri = (process.env.MONGODB_URI || '')
+        .trim()
+        .replace(/^MONGODB_URI\s*=\s*/i, '')
+        .replace(/^['"`]+|['"`]+$/g, '')
+        .replace(/\s+/g, '');
       if (!uri) return getMemoryDb();
       const { MongoClient } = await import('mongodb');
+      // database name must be a simple word (no dots, slashes or spaces) — fall back to "realtechx"
+      const rawName = (process.env.MONGODB_DB || '').trim().replace(/^['"`]+|['"`]+$/g, '');
+      const dbName = /^[A-Za-z0-9_-]{1,60}$/.test(rawName) ? rawName : 'realtechx';
       const client = new MongoClient(uri, { maxPoolSize: 10, serverSelectionTimeoutMS: 8000 });
       await client.connect();
-      const db = new MongoDb(client.db(process.env.MONGODB_DB || 'realtechx'));
-      ensureIndexes(client.db(process.env.MONGODB_DB || 'realtechx')).catch(() => {});
+      const db = new MongoDb(client.db(dbName));
+      ensureIndexes(client.db(dbName)).catch(() => {});
       return db;
     })().catch((e) => {
       g.__rtxDb = undefined; // retry on next request
